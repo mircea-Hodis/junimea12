@@ -13283,11 +13283,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\User\\source\\repos\\juni\\juni.ro\\VueASPNETCore2WebApiAuth\\backend\\AuthWebApi\\AuthWebApi.csproj",
+      "projectUniqueName": "C:\\Users\\User\\source\\repos\\juni\\junimea\\AuthWebApi\\AuthWebApi.csproj",
       "projectName": "AuthWebApi",
-      "projectPath": "C:\\Users\\User\\source\\repos\\juni\\juni.ro\\VueASPNETCore2WebApiAuth\\backend\\AuthWebApi\\AuthWebApi.csproj",
+      "projectPath": "C:\\Users\\User\\source\\repos\\juni\\junimea\\AuthWebApi\\AuthWebApi.csproj",
       "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\User\\source\\repos\\juni\\juni.ro\\VueASPNETCore2WebApiAuth\\backend\\AuthWebApi\\obj\\",
+      "outputPath": "C:\\Users\\User\\source\\repos\\juni\\junimea\\AuthWebApi\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
