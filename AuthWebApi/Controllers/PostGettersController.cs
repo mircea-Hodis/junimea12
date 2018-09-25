@@ -43,16 +43,16 @@ namespace AuthWebApi.Controllers
             });
         }
 
-        //[HttpPost]
-        //[Route("GetAllUserPosts")]
-        //public async Task<IActionResult> GetUsersPosts([FromBody]UserProfileRequest request)
-        //{
-        //    var result = await _postRepository.GetPostById(request.UserId);
-        //    return new OkObjectResult(new
-        //    {
-        //        Message = "Whuhu",
-        //        result
-        //    });
-        //}
+        [HttpPost]
+        [Route("GetAllUserPosts")]
+        public async Task<IActionResult> GetUsersPosts([FromBody]UserProfileRequest request)
+        {
+            var result = await _postRepository.GetUserPosts(request.UserId);
+            return new OkObjectResult(new
+            {
+                Message = "Whuhu",
+                result
+            });
+        }
     }
 }

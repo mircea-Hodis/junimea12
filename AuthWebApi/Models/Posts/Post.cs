@@ -36,4 +36,17 @@ namespace AuthWebApi.Models.Posts
         public int PostId { get; set; }
         public string Url { get;set; }
     }
+
+    public class PostLike
+    {
+        [Key]
+        public int LikeId { get; set; }
+        public string UserId { get; set; }
+        public int PostId { get; set; }
+        public DateTime LikeTime { get; set; }
+        public int LikeCount { get; set; }
+        [NotMapped]
+        public int PostLikesCount { get; set; }
+
+    }
 }

@@ -12,5 +12,6 @@ namespace AuthWebApi.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<PostFiles> PostFiles { get; set; }
+        public DbSet<PostLike> PostLikes { get; set; }
     }
 }

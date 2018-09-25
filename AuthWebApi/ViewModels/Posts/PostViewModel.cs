@@ -9,4 +9,10 @@ namespace AuthWebApi.ViewModels.Posts
         public string Description { get; set; }
         public List<IFormFile> Files { get; set; }
     }
+
+    public class LikePostViewModel
+    {
+        public int PostId { get; set; }
+        public int Value { get; set; }
+    }
 }

@@ -11,8 +11,8 @@ using System;
 namespace AuthWebApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180910171351_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20180922140600_initialCreate")]
+    partial class initialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -134,6 +134,24 @@ namespace AuthWebApi.Migrations
                     b.HasIndex("PostId");
 
                     b.ToTable("PostFiles");
+                });
+
+            modelBuilder.Entity("AuthWebApi.Models.Posts.PostLike", b =>
+                {
+                    b.Property<int>("LikeId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("LikeCount");
+
+                    b.Property<DateTime>("LikeTime");
+
+                    b.Property<int>("PostId");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("LikeId");
+
+                    b.ToTable("PostLikes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

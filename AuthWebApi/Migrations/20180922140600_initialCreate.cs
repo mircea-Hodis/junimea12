@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace AuthWebApi.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class initialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -50,6 +50,22 @@ namespace AuthWebApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PostLikes",
+                columns: table => new
+                {
+                    LikeId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    LikeCount = table.Column<int>(nullable: false),
+                    LikeTime = table.Column<DateTime>(nullable: false),
+                    PostId = table.Column<int>(nullable: false),
+                    UserId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PostLikes", x => x.LikeId);
                 });
 
             migrationBuilder.CreateTable(
@@ -289,6 +305,9 @@ namespace AuthWebApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "PostFiles");
+
+            migrationBuilder.DropTable(
+                name: "PostLikes");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

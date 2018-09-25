@@ -135,6 +135,24 @@ namespace AuthWebApi.Migrations
                     b.ToTable("PostFiles");
                 });
 
+            modelBuilder.Entity("AuthWebApi.Models.Posts.PostLike", b =>
+                {
+                    b.Property<int>("LikeId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("LikeCount");
+
+                    b.Property<DateTime>("LikeTime");
+
+                    b.Property<int>("PostId");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("LikeId");
+
+                    b.ToTable("PostLikes");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")

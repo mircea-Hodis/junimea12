@@ -9,3 +9,14 @@ C:\Users\User\source\repos\juni\juni.ro\VueASPNETCore2WebApiAuth\backend\AuthWeb
 C:\Users\User\source\repos\juni\juni.ro\VueASPNETCore2WebApiAuth\backend\AuthWebApi\obj\Debug\netcoreapp2.0\AuthWebApi.dll
 C:\Users\User\source\repos\juni\juni.ro\VueASPNETCore2WebApiAuth\backend\AuthWebApi\obj\Debug\netcoreapp2.0\AuthWebApi.pdb
 C:\Users\User\source\repos\juni\juni.ro\VueASPNETCore2WebApiAuth\backend\AuthWebApi\obj\Debug\netcoreapp2.0\AuthWebApi.csprojAssemblyReference.cache
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\bin\Debug\netcoreapp2.0\AuthWebApi.deps.json
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\bin\Debug\netcoreapp2.0\AuthWebApi.runtimeconfig.json
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\bin\Debug\netcoreapp2.0\AuthWebApi.runtimeconfig.dev.json
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\bin\Debug\netcoreapp2.0\AuthWebApi.dll
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\bin\Debug\netcoreapp2.0\AuthWebApi.pdb
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\obj\Debug\netcoreapp2.0\AuthWebApi.csproj.CoreCompileInputs.cache
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\obj\Debug\netcoreapp2.0\AuthWebApi.AssemblyInfoInputs.cache
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\obj\Debug\netcoreapp2.0\AuthWebApi.AssemblyInfo.cs
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\obj\Debug\netcoreapp2.0\AuthWebApi.dll
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\obj\Debug\netcoreapp2.0\AuthWebApi.pdb
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\obj\Debug\netcoreapp2.0\AuthWebApi.csprojAssemblyReference.cache

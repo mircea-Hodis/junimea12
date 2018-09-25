@@ -10,5 +10,8 @@ namespace AuthWebApi.IRepository
         Task<Post> CreateAsync(Post post);
         Task<List<Post>> GetList(DateTime startTime);
         Task<Post> GetPostById(int postId);
+        Task<List<Post>> GetUserPosts(string userId);
+        Task<PostLike> LikePost(PostLike like);
+        Task<int> UnLikePost(PostLike like);
     }
 }

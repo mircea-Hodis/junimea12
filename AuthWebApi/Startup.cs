@@ -12,7 +12,6 @@ using AuthWebApi.Models;
 using AuthWebApi.Models.Entities;
 using AuthWebApi.Validators;
 using AutoMapper;
-using DataManagement.Repository;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;

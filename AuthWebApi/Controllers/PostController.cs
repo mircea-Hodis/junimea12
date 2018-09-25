@@ -82,6 +82,21 @@ namespace AuthWebApi.Controllers
               CreatedDate = DateTime.Now
           };
 
+        [HttpPost]
+        [Route("LikePost")]
+        public async Task<IActionResult> LikePost([FromBody]LikePostViewModel viewModel)
+        {
+            var postLike = new PostLike
+            {
+                UserId = _caller.Claims.Single(claim => claim.Type == "id").ToString().Remove(0, 4),
+                PostId = viewModel.PostId,
+                LikeTime = DateTime.Now,
+                LikeCount = viewModel.Value
+            };
+            var result = await _postRepository.LikePost(postLike);
+
+            return Ok();
+        }
 
     }
 }

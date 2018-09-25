@@ -8,7 +8,7 @@ using AuthWebApi.Models.Posts;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 
-namespace DataManagement.Repository
+namespace AuthWebApi.Repository
 {
     public class PostRepository : IPostRepository
     {
@@ -44,7 +44,7 @@ namespace DataManagement.Repository
 
         public async Task<List<Post>> GetUserPosts(string userId)
         {
-            var result = new List<Post>();
+            List<Post> result;
             string query = $@"SELECT TOP (30) 
                            Posts.[Id]
                           ,Posts.[CreatedDate]
@@ -70,7 +70,7 @@ namespace DataManagement.Repository
 
         public async Task<List<Post>> GetList(DateTime startTime)
         {
-            var result = new List<Post>();
+            List<Post> result;
             string query = $@"SELECT TOP (30) 
                            Posts.[Id]
                           ,Posts.[CreatedDate]
@@ -96,7 +96,7 @@ namespace DataManagement.Repository
 
         public async Task<Post> GetPostById(int postId)
         {
-            var result = new Post();
+            Post result;
             string query = $@"SELECT TOP (30) 
                            Post.[Id]
                           ,Post.[CreatedDate]
@@ -140,7 +140,7 @@ namespace DataManagement.Repository
             string query = $@"SELECT [Id]
                           ,[PostId]
                           ,[Url] FROM [dbo].[PostFiles] WHERE [PostId] IN @postIds";
-            var postFiles = new List<PostFiles>();
+            List<PostFiles> postFiles;
             using (var connection = new SqlConnection(_connectionString))
             {
                 var queryResult = await connection.QueryAsync<PostFiles>(query, new { postIds });
@@ -153,6 +153,71 @@ namespace DataManagement.Repository
             }
 
             return posts;
+        }
+
+        public async Task<PostLike> LikePost(PostLike like)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                like.PostLikesCount = await connection.QuerySingleOrDefaultAsync<int>(
+                        $@"IF NOT EXISTS( 
+                            SELECT TOP (1) 
+                            [UserId] 
+                            FROM [dbo].[PostLikes] 
+                            WHERE [PostId] = @{nameof(like.PostId)} AND [UserId] = @{nameof(like.UserId)})
+                         BEGIN
+                            INSERT INTO [dbo].[PostLikes](
+                             [LikeTime]
+                            ,[PostId]
+                            ,[UserId]
+                            ,[LikeCount])
+                            VALUES (
+                             @{nameof(like.LikeTime)}
+                            ,@{nameof(like.PostId)}
+                            ,@{nameof(like.UserId)}
+                            ,@{nameof(like.LikeCount)}
+                            )
+                            UPDATE [dbo].[Posts] 
+                                SET [Posts].[Likes] = [Posts].[Likes] + @{nameof(like.LikeCount)}
+                            WHERE [dbo].[Posts].[Id] = @{nameof(like.PostId)}
+                            ;SELECT CAST([Posts].[Likes] as int) FROM [dbo].[Posts] WHERE [dbo].[Posts].[Id] = @{nameof(like.PostId)}
+                        END
+                        ELSE 
+                        BEGIN
+                            UPDATE [dbo].[PostLikes]
+                                SET [LikeTime] = @{nameof(like.LikeTime)},
+                                    [LikeCount] = @{nameof(like.LikeCount)}
+                            WHERE [dbo].[PostLikes].[PostId] = @{nameof(like.PostId)}
+                            UPDATE [dbo].[Posts] 
+                                SET [Posts].[Likes] = [Posts].[Likes] + @{nameof(like.LikeCount)}
+                            WHERE [dbo].[Posts].[Id] = @{nameof(like.PostId)}
+                            ;SELECT CAST([Posts].[Likes] as int) FROM [dbo].[Posts] WHERE [dbo].[Posts].[Id] = @{nameof(like.PostId)}
+                        END", like);
+            }
+            return like;
+        }
+
+        public async Task<int> UnLikePost(PostLike like)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                like.PostLikesCount = await connection.QuerySingleOrDefaultAsync<int>(
+                        $@"IF EXISTS( 
+                            SELECT TOP (1) 
+                            [UserId] 
+                            FROM [dbo].[PostLikes] 
+                            WHERE [PostId] = @{nameof(like.PostId)} AND [UserId] = @{nameof(like.UserId)})
+                         BEGIN
+                            UPDATE [dbo].[PostLikes]
+                                
+                            WHERE [PostLikes].[PostId] = @{nameof(like.PostId)}
+                            UPDATE [dbo].[Posts] 
+                                SET [Posts].[Likes] = [Posts].[Likes] - 1
+                            WHERE [Posts].[Id] = @{nameof(like.PostId)}
+                            ;SELECT CAST([Posts].[Likes] as int) FROM [dbo].[Posts] WHERE [Posts].[Id] =  @{nameof(like.PostId)}
+                        END", like);
+            }
+            return like.PostLikesCount;
         }
     }
 }
