@@ -12,6 +12,5 @@ namespace AuthWebApi.IRepository
         Task<Post> GetPostById(int postId);
         Task<List<Post>> GetUserPosts(string userId);
         Task<PostLike> LikePost(PostLike like);
-        Task<int> UnLikePost(PostLike like);
     }
 }

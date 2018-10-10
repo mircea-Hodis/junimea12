@@ -8,9 +8,9 @@ namespace AuthWebApi.Authorize
     public class AuthorizationHelper : IAuthorizationHelper
     {
         private readonly ClaimsPrincipal _caller;
-        private readonly ApplicationDbContext _appDbContext;
+        private readonly MsSqlUserDbContext _appDbContext;
 
-        public AuthorizationHelper(IHttpContextAccessor httpContextAccessor, ApplicationDbContext appDbContenxt)
+        public AuthorizationHelper(IHttpContextAccessor httpContextAccessor, MsSqlUserDbContext appDbContenxt)
         {
             _caller = httpContextAccessor.HttpContext.User;
             _appDbContext = appDbContenxt;

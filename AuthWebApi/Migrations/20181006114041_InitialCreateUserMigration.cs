@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace AuthWebApi.Migrations
 {
-    public partial class initialCreate : Migration
+    public partial class InitialCreateUserMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

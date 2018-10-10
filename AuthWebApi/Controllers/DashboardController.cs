@@ -16,9 +16,9 @@ namespace AuthWebApi.Controllers
   public class DashboardController : Controller
   {
     private readonly ClaimsPrincipal _caller;
-    private readonly ApplicationDbContext _appDbContext;
+    private readonly MsSqlUserDbContext _appDbContext;
 
-    public DashboardController(UserManager<AppUser> userManager, ApplicationDbContext appDbContext, IHttpContextAccessor httpContextAccessor)
+    public DashboardController(UserManager<AppUser> userManager, MsSqlUserDbContext appDbContext, IHttpContextAccessor httpContextAccessor)
     {
       _caller = httpContextAccessor.HttpContext.User;
       _appDbContext = appDbContext;

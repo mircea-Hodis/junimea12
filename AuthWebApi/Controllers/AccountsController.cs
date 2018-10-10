@@ -12,13 +12,13 @@ namespace AuthWebApi.Controllers
     [Route("api/[controller]")]
     public class AccountsController : Controller
     {
-        private readonly ApplicationDbContext _appDbContext;
+        private readonly MsSqlUserDbContext _appDbContext;
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
 
         public AccountsController(UserManager<AppUser> userManager,
                                  IMapper mapper,
-                                 ApplicationDbContext appDbContext)
+                                 MsSqlUserDbContext appDbContext)
         {
             _userManager = userManager;
             _mapper = mapper;

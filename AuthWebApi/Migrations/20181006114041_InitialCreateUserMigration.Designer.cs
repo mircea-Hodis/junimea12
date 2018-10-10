@@ -10,15 +10,15 @@ using System;
 
 namespace AuthWebApi.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180922140600_initialCreate")]
-    partial class initialCreate
+    [DbContext(typeof(MsSqlUserDbContext))]
+    [Migration("20181006114041_InitialCreateUserMigration")]
+    partial class InitialCreateUserMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
+                .HasAnnotation("ProductVersion", "2.0.3-rtm-10026")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("AuthWebApi.Models.Entities.AppUser", b =>

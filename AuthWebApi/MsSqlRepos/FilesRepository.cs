@@ -13,7 +13,7 @@ namespace AuthWebApi.Repository
         private readonly string _connectionString;
         public FilesRepository(IConfiguration configurationService)
         {
-            _connectionString = configurationService.GetConnectionString("DefaultConnection");
+            _connectionString = configurationService.GetConnectionString("UserAuthConnection");
         }
 
         public async Task<List<PostFiles>> AddPostImagesAsync(List<PostFiles> postFiles)

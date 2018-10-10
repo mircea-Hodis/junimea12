@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AuthWebApi.Models.Comments;
 
 namespace AuthWebApi.Models.Posts
 {
@@ -21,6 +22,8 @@ namespace AuthWebApi.Models.Posts
         public string FirstName { get; set; }
         [NotMapped]
         public string LastName { get; set; }
+        [NotMapped]
+        public List<Comment> Comments { get; set; }
     }
 
     public class PostFiles

@@ -4,24 +4,28 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using AuthWebApi.IRepository;
+using AuthWebApi.Models.Comments;
 using AuthWebApi.Models.Posts;
 using Dapper;
 using Microsoft.Extensions.Configuration;
+using MySql.Data.MySqlClient;
 
 namespace AuthWebApi.Repository
 {
     public class PostRepository : IPostRepository
     {
-        private readonly string _connectionString;
+        private readonly string _msSqlConnectionString;
+        private readonly string _mysqlConnectionString; 
 
         public PostRepository(IConfiguration configurationService)
         {
-            _connectionString = configurationService.GetConnectionString("DefaultConnection");
+            _msSqlConnectionString = configurationService.GetConnectionString("UserAuthConnection");
+            _mysqlConnectionString = configurationService.GetConnectionString("MysqlConnection");
         }
 
         public async Task<Post> CreateAsync(Post post)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_msSqlConnectionString))
             {
                 post.Id = await connection.QuerySingleAsync<int>(
                     $@"INSERT INTO [dbo].[Posts](
@@ -59,7 +63,7 @@ namespace AuthWebApi.Repository
                               INNER JOIN 
                               [dbo].[AspNetUsers] AppUser ON Posts.[UserId] = AppUser.[Id]
                           WHERE [UserId] = @userId";
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_msSqlConnectionString))
             {
                 var posts = await connection.QueryAsync<Post>(query, new { userId });
                 result = posts.AsList();
@@ -85,7 +89,7 @@ namespace AuthWebApi.Repository
                               INNER JOIN 
                               [dbo].[AspNetUsers] AppUser ON Posts.[UserId] = AppUser.[Id]
                           WHERE [CreatedDate] < @startTime";
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_msSqlConnectionString))
             {
                 var posts = await connection.QueryAsync<Post>(query, new { startTime });
                 result = posts.AsList();
@@ -97,7 +101,7 @@ namespace AuthWebApi.Repository
         public async Task<Post> GetPostById(int postId)
         {
             Post result;
-            string query = $@"SELECT TOP (30) 
+            string query = $@"SELECT TOP (1) 
                            Post.[Id]
                           ,Post.[CreatedDate]
                           ,Post.[Description]
@@ -111,12 +115,54 @@ namespace AuthWebApi.Repository
                               INNER JOIN 
                               [dbo].[AspNetUsers] AppUser ON Post.[UserId] = AppUser.[Id] 
                           WHERE Post.[Id] = @postId";
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_msSqlConnectionString))
             {
                 result = await connection.QuerySingleAsync<Post>(query, new { postId });
             }
 
-            return await AddPostFilesToPost(result);
+            result = await AddPostFilesToPost(result);
+
+            return await AddCommentsToPost(result);
+        }
+
+        private async Task<Post> AddCommentsToPost(Post post)
+        {
+            var postId = post.Id;
+            var query = $@"SELECT
+                            comments.Id,
+                            comments.Message, 
+                            comments.Likes, 
+                            comments.PostId, 
+                            comments.UserId
+                        FROM juniro.comments AS comments
+                        WHERE comments.PostId = @postId";
+
+            using (var connection = new MySqlConnection(_mysqlConnectionString))
+            {
+                var comments = await connection.QueryAsync<Comment>(query, new { postId });
+
+                post.Comments = comments.AsList();
+                foreach (var comment in post.Comments)
+                {
+                    comment.Files = await GetCommentFiles(comment.Id, connection);
+                }
+            }
+            return post;
+        }
+
+
+        private async Task<List<CommentFiles>> GetCommentFiles(long commentId, MySqlConnection connection)
+        {
+            var query = $@"SELECT
+                            files.Id, 
+                            files.CommentId, 
+                            files.Url
+                        FROM juniro.comment_files AS files
+                        WHERE files.CommentId = @commentId";
+
+            var result = await connection.QueryAsync<CommentFiles>(query, new {commentId});
+
+           return result.AsList();
         }
 
         private async Task<Post> AddPostFilesToPost(Post post)
@@ -125,7 +171,7 @@ namespace AuthWebApi.Repository
             string query = $@"SELECT [Id]
                           ,[PostId]
                           ,[Url] FROM [dbo].[PostFiles] WHERE [PostId] = @postId";
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_msSqlConnectionString))
             {
                 var queryResult = await connection.QueryAsync<PostFiles>(query, new { postId });
                 post.Files = queryResult.AsList();
@@ -137,27 +183,32 @@ namespace AuthWebApi.Repository
         private async Task<List<Post>> AddPostFilesToPosts(List<Post> posts)
         {
             var postIds = posts.Select(post => post.Id).ToArray();
-            string query = $@"SELECT [Id]
+            var query = $@"SELECT [Id]
                           ,[PostId]
                           ,[Url] FROM [dbo].[PostFiles] WHERE [PostId] IN @postIds";
             List<PostFiles> postFiles;
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_msSqlConnectionString))
             {
                 var queryResult = await connection.QueryAsync<PostFiles>(query, new { postIds });
-                postFiles = queryResult.AsList();
+                postFiles = queryResult.AsList();   
             }
 
-            foreach(var post in posts)
-            {
-                post.Files = postFiles.Where(postFile => postFile.PostId == post.Id).ToList();
-            }
+            AddPostFilesById(posts, postFiles);
 
             return posts;
         }
 
+        private void AddPostFilesById(List<Post> posts, List<PostFiles> postFiles)
+        {
+            foreach (var post in posts)
+            {
+                post.Files = postFiles.Where(postFile => postFile.PostId == post.Id).ToList();
+            }
+        }
+
         public async Task<PostLike> LikePost(PostLike like)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_msSqlConnectionString))
             {
                 like.PostLikesCount = await connection.QuerySingleOrDefaultAsync<int>(
                         $@"IF NOT EXISTS( 
@@ -195,29 +246,6 @@ namespace AuthWebApi.Repository
                         END", like);
             }
             return like;
-        }
-
-        public async Task<int> UnLikePost(PostLike like)
-        {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                like.PostLikesCount = await connection.QuerySingleOrDefaultAsync<int>(
-                        $@"IF EXISTS( 
-                            SELECT TOP (1) 
-                            [UserId] 
-                            FROM [dbo].[PostLikes] 
-                            WHERE [PostId] = @{nameof(like.PostId)} AND [UserId] = @{nameof(like.UserId)})
-                         BEGIN
-                            UPDATE [dbo].[PostLikes]
-                                
-                            WHERE [PostLikes].[PostId] = @{nameof(like.PostId)}
-                            UPDATE [dbo].[Posts] 
-                                SET [Posts].[Likes] = [Posts].[Likes] - 1
-                            WHERE [Posts].[Id] = @{nameof(like.PostId)}
-                            ;SELECT CAST([Posts].[Likes] as int) FROM [dbo].[Posts] WHERE [Posts].[Id] =  @{nameof(like.PostId)}
-                        END", like);
-            }
-            return like.PostLikesCount;
         }
     }
 }

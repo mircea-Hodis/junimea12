@@ -16,9 +16,9 @@ namespace AuthWebApi.Controllers
     public class ProfileController : Controller
     {
         private readonly ClaimsPrincipal _caller;
-        private readonly ApplicationDbContext _appDbContext;
+        private readonly MsSqlUserDbContext _appDbContext;
 
-        public ProfileController(UserManager<AppUser> userManager, ApplicationDbContext appDbContext, IHttpContextAccessor httpContextAccessor)
+        public ProfileController(UserManager<AppUser> userManager, MsSqlUserDbContext appDbContext, IHttpContextAccessor httpContextAccessor)
         {
             _caller = httpContextAccessor.HttpContext.User;
             _appDbContext = appDbContext;
