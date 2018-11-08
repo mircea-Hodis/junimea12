@@ -10,7 +10,7 @@ using Dapper;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 
-namespace AuthWebApi.Repository
+namespace AuthWebApi.MsSqlRepos
 {
     public class PostRepository : IPostRepository
     {
@@ -72,7 +72,7 @@ namespace AuthWebApi.Repository
             return await AddPostFilesToPosts(result);
         }
 
-        public async Task<List<Post>> GetList(DateTime startTime)
+        public async Task<List<Post>> GetList(DateTime startTime, string userId)
         {
             List<Post> result;
             string query = $@"SELECT TOP (30) 
@@ -85,13 +85,16 @@ namespace AuthWebApi.Repository
                           ,AppUser.[FacebookId]
                           ,AppUser.[FirstName] 
                           ,AppUser.[LastName]
+                          ,LikeCount(
+                                SELECT [LikeCount] FROM [dbo].[PostLikes] PostLikes
+                                WHERE PostLikes.[UserId] = @userId AND Posts.[Id] = PostLikes.[PostId])
                           FROM [dbo].[Posts] Posts 
                               INNER JOIN 
                               [dbo].[AspNetUsers] AppUser ON Posts.[UserId] = AppUser.[Id]
                           WHERE [CreatedDate] < @startTime";
             using (var connection = new SqlConnection(_msSqlConnectionString))
             {
-                var posts = await connection.QueryAsync<Post>(query, new { startTime });
+                var posts = await connection.QueryAsync<Post>(query, new { startTime , userId});
                 result = posts.AsList();
                 
             }
@@ -101,7 +104,7 @@ namespace AuthWebApi.Repository
         public async Task<Post> GetPostById(int postId)
         {
             Post result;
-            string query = $@"SELECT TOP (1) 
+            var query = $@"SELECT TOP (1) 
                            Post.[Id]
                           ,Post.[CreatedDate]
                           ,Post.[Description]
@@ -128,7 +131,7 @@ namespace AuthWebApi.Repository
         private async Task<Post> AddCommentsToPost(Post post)
         {
             var postId = post.Id;
-            var query = $@"SELECT
+            var query = $@"SELECT TOP (10)
                             comments.Id,
                             comments.Message, 
                             comments.Likes, 
@@ -149,7 +152,6 @@ namespace AuthWebApi.Repository
             }
             return post;
         }
-
 
         private async Task<List<CommentFiles>> GetCommentFiles(long commentId, MySqlConnection connection)
         {

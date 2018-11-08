@@ -25,6 +25,7 @@ namespace AuthWebApi.ViewModels.Posts
 
     public class LikeCommentViewModel
     {
+        public string UserId { get; set; }
         public int Comment { get; set; }
         public int Value { get; set; }
     }

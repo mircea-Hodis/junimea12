@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using AuthWebApi.Auth;
-using AuthWebApi.Data;
+using AuthWebApi.DataContexts;
 using AuthWebApi.Helpers;
 using AuthWebApi.Models;
 using AuthWebApi.Models.Entities;
@@ -84,7 +84,7 @@ namespace AuthWebApi.Controllers
                 return BadRequest(Errors.AddErrorToModelState("login_failure", "Failed to create local user account.", ModelState));
             }
 
-            var jwt = await Tokens.GenerateJwt(_jwtFactory.GenerateClaimsIdentity(localUser.UserName, localUser.Id),
+            var jwt = await Tokens.GenerateJwt(await _jwtFactory.GenerateClaimsIdentity(localUser.UserName, localUser.Id),
               _jwtFactory, localUser.UserName, _jwtOptions, new JsonSerializerSettings { Formatting = Formatting.Indented });
 
             return new OkObjectResult(jwt);

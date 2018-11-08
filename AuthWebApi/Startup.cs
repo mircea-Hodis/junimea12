@@ -2,7 +2,6 @@
 using System.Net;
 using System.Text;
 using AuthWebApi.Auth;
-using AuthWebApi.Data;
 using AuthWebApi.Extensions;
 using AuthWebApi.Helpers;
 using AuthWebApi.IRepository;
@@ -27,7 +26,9 @@ using Microsoft.IdentityModel.Tokens;
 using AuthWebApi.UploadHelpers;
 using AuthWebApi.Repository;
 using AuthWebApi.Authorize;
+using AuthWebApi.DataContexts;
 using AuthWebApi.IMySqlRepos;
+using AuthWebApi.MsSqlRepos;
 using AuthWebApi.MySqlRepos;
 
 namespace AuthWebApi
@@ -37,7 +38,8 @@ namespace AuthWebApi
         private const string SecretKey = "iNivDmHLpUA223sqsfhqGbMRdRj1PVkH"; // todo: get this from somewhere secure
         private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
 
-        public Startup(IConfiguration configuration)
+        public Startup(
+            IConfiguration configuration)
         {
             Configuration = configuration;
         }
@@ -54,11 +56,11 @@ namespace AuthWebApi
 
             RegisterConfigurationBuilder(services);
 
+            AddBuilder(services);
+
             AddTransients(services);
 
             ConfigureJwtSettings(services);
-
-            AddBuilder(services);
 
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
@@ -99,7 +101,12 @@ namespace AuthWebApi
             services.AddTransient<IFilesRepository, FilesRepository>();
             services.AddTransient<IAuthorizationHelper, AuthorizationHelper>();
             services.AddTransient<ICommentRepository, CommentRepository>();
-            services.AddTransient<ICommentFilesUploadHelpers, CommentFilesUploadHelper>();
+            services.AddTransient<ICommentFilesUploader, CommentFilesUploader>();
+            services.AddTransient<IRoleCheckRepository, RoleCheckRepository>();
+            services.AddTransient<IUserManagementRepository, UserManagementRepository>();
+            services.AddTransient<IUserCommonDataRepository, UserCommonDataRepository>();
+            services.AddTransient<IReportPostRepository, ReportPostRepository>();
+            services.AddScoped<RoleManager<IdentityRole>>();
         }
 
         private void ConfigureJwtSettings(IServiceCollection services)
@@ -141,7 +148,19 @@ namespace AuthWebApi
         {
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("ApiUser", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
+                options.AddPolicy(
+                    "ApiUser", 
+                    policy => 
+                        policy.RequireClaim(
+                            Constants.Strings.JwtClaimIdentifiers.Rol, 
+                            Constants.Strings.JwtClaims.ApiAccess));
+
+                options.AddPolicy(
+                    "ApiAdmin",
+                    policy => 
+                        policy.RequireClaim(
+                        Constants.Strings.JwtClaimIdentifiers.Rol,
+                        Constants.Strings.JwtClaims.Admin));
             });
         }
 

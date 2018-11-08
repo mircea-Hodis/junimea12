@@ -8,7 +8,7 @@ namespace AuthWebApi.IRepository
     public interface IPostRepository
     {
         Task<Post> CreateAsync(Post post);
-        Task<List<Post>> GetList(DateTime startTime);
+        Task<List<Post>> GetList(DateTime startTime, string userId);
         Task<Post> GetPostById(int postId);
         Task<List<Post>> GetUserPosts(string userId);
         Task<PostLike> LikePost(PostLike like);

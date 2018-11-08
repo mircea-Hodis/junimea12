@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
+using AuthWebApi.Authorize;
 using AuthWebApi.IMySqlRepos;
-using AuthWebApi.IRepository;
 using AuthWebApi.IUploadHelpers;
 using AuthWebApi.Models.Comments;
 using AuthWebApi.ViewModels.Posts;
@@ -16,28 +13,41 @@ namespace AuthWebApi.Controllers
 {
     [Produces("application/json")]
     [Route("api/Comments")]
-    [Authorize(Policy = "ApiUser")]
+    [Authorize]
         
+    // ReSharper disable once HollowTypeName
     public class CommentsController : Controller
     {
         private readonly ClaimsPrincipal _caller;
         private readonly ICommentRepository _commentRepository;
-        private readonly ICommentFilesUploadHelpers _ulploadHelper;
+        private readonly IAuthorizationHelper _authHelper;
+        private readonly ICommentFilesUploader _ulploadHelper;
 
         public CommentsController(
             IHttpContextAccessor httpContextAccessor,
             ICommentRepository commentsRepository,
-            ICommentFilesUploadHelpers ulploadHelper)
+            ICommentFilesUploader ulploadHelper,
+            IAuthorizationHelper authHelper)
         {
             _caller = httpContextAccessor.HttpContext.User;
             _commentRepository = commentsRepository;
             _ulploadHelper = ulploadHelper;
+            _authHelper = authHelper;
         }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromForm] CommentViewModel model)
         {
             var comment = await MapViewModelToCommentInstance(model);
+
+            if (await _authHelper.CheckIfUserIsBanned(comment.UserId))
+                return new BadRequestObjectResult(
+                    new
+                    {
+                        Message = "User currently bannend",
+                        StatusCodes.Status403Forbidden
+                    });
+
             comment = await _commentRepository.CreateAsync(comment);
 
             return new OkObjectResult(new
@@ -60,12 +70,7 @@ namespace AuthWebApi.Controllers
             {
                 PostId = model.PostId,
                 Message = model.Comment,
-                UserId = _caller
-                    .Claims
-                    .Single(
-                        claim =>
-                            string.Equals(claim.Type, "id", StringComparison.OrdinalIgnoreCase))
-                    .ToString().Remove(0, 4),
+                UserId = await _authHelper.GetCallerId(_caller),
                 Likes = 0,
                 Files = await _ulploadHelper.UploadFiles(model.Files, model.PostId)
         };

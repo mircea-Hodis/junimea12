@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AuthWebApi.Auth;
 using AuthWebApi.Helpers;
+using AuthWebApi.IMySqlRepos;
 using AuthWebApi.Models;
 using AuthWebApi.Models.Entities;
 using AuthWebApi.ViewModels;
@@ -19,7 +20,10 @@ namespace AuthWebApi.Controllers
         private readonly IJwtFactory _jwtFactory;
         private readonly JwtIssuerOptions _jwtOptions;
 
-        public AuthController(UserManager<AppUser> userManager, IJwtFactory jwtFactory, IOptions<JwtIssuerOptions> jwtOptions)
+        public AuthController(
+            UserManager<AppUser> userManager, 
+            IJwtFactory jwtFactory, 
+            IOptions<JwtIssuerOptions> jwtOptions)
         {
             _userManager = userManager;
             _jwtFactory = jwtFactory;
@@ -58,7 +62,7 @@ namespace AuthWebApi.Controllers
             // check the credentials
             if (await _userManager.CheckPasswordAsync(userToVerify, password))
             {
-                return await Task.FromResult(_jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id));
+                return await Task.FromResult( await _jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id));
             }
 
             // Credentials are invalid, or account doesn't exist

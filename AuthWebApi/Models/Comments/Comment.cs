@@ -40,5 +40,13 @@ namespace AuthWebApi.Models.Comments
             Url = url;
         }
     }
+
+    public class CommentLikes
+    {
+        [Key]
+        public string Id { get; set; }
+        public long CommentId { get; set; }
+        public string UserId { get; set; }
+    }
 }
     

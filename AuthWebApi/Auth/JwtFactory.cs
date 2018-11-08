@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using AuthWebApi.IRepository;
 using AuthWebApi.Models;
 using Microsoft.Extensions.Options;
 
@@ -11,10 +12,13 @@ namespace AuthWebApi.Auth
     public class JwtFactory : IJwtFactory
     {
         private readonly JwtIssuerOptions _jwtOptions;
-
-        public JwtFactory(IOptions<JwtIssuerOptions> jwtOptions)
+        private readonly IRoleCheckRepository _roleCheckRepository;
+        public JwtFactory(
+            IOptions<JwtIssuerOptions> jwtOptions,
+            IRoleCheckRepository roleCheckRepository)
         {
             _jwtOptions = jwtOptions.Value;
+            _roleCheckRepository = roleCheckRepository;
             ThrowIfInvalidOptions(_jwtOptions);
         }
 
@@ -42,14 +46,27 @@ namespace AuthWebApi.Auth
             return encodedJwt;
         }
 
-        public ClaimsIdentity GenerateClaimsIdentity(string userName, string id)
+        public async Task<ClaimsIdentity> GenerateClaimsIdentity(string userName, string id)
         {
+            var roleId = await _roleCheckRepository.GetUserRole(id);
+            return GenerateClaim(userName, id, roleId);
+        }
+
+        private ClaimsIdentity GenerateClaim(string userName, string id, int roleId)
+        {
+            if(roleId == 1)
+                return new ClaimsIdentity(new GenericIdentity(userName, "Token"), new[]
+                {
+                    new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id),
+                    new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Rol, Helpers.Constants.Strings.JwtClaims.Admin)
+                });
             return new ClaimsIdentity(new GenericIdentity(userName, "Token"), new[]
             {
-                        new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id),
-                        new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Rol, Helpers.Constants.Strings.JwtClaims.ApiAccess)
-                    });
+                new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id),
+                new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Rol, Helpers.Constants.Strings.JwtClaims.ApiAccess)
+            });
         }
+
 
         /// <returns>Date converted to seconds since Unix epoch (Jan 1, 1970, midnight UTC).</returns>
         private static long ToUnixEpochDate(DateTime date)

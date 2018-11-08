@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using AuthWebApi.Data;
+using AuthWebApi.DataContexts;
 using AuthWebApi.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AuthWebApi.Controllers
 {
-  [Authorize(Policy = "ApiUser")]
+  [Authorize]
   [Route("api/[controller]/[action]")]
   public class DashboardController : Controller
   {

@@ -23,7 +23,10 @@ namespace AuthWebApi.Models.Posts
         [NotMapped]
         public string LastName { get; set; }
         [NotMapped]
+        public int LikeCount { get; set; }
+        [NotMapped]
         public List<Comment> Comments { get; set; }
+
     }
 
     public class PostFiles

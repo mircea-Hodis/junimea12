@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
-using AuthWebApi.Data;
+using AuthWebApi.DataContexts;
 using AuthWebApi.Helpers;
+using AuthWebApi.IMySqlRepos;
 using AuthWebApi.Models.Entities;
 using AuthWebApi.ViewModels;
 using AutoMapper;
@@ -10,19 +11,23 @@ using Microsoft.AspNetCore.Mvc;
 namespace AuthWebApi.Controllers
 {
     [Route("api/[controller]")]
+    // ReSharper disable once HollowTypeName
     public class AccountsController : Controller
     {
         private readonly MsSqlUserDbContext _appDbContext;
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly IUserCommonDataRepository _userCommonDataRepository;
 
         public AccountsController(UserManager<AppUser> userManager,
                                  IMapper mapper,
-                                 MsSqlUserDbContext appDbContext)
+                                 MsSqlUserDbContext appDbContext,
+                                 IUserCommonDataRepository userCommonDataRepository)
         {
             _userManager = userManager;
             _mapper = mapper;
             _appDbContext = appDbContext;
+            _userCommonDataRepository = userCommonDataRepository;
         }
 
         // POST api/accounts
@@ -45,7 +50,26 @@ namespace AuthWebApi.Controllers
             await _appDbContext.Customers.AddAsync(new Customer { IdentityId = userIdentity.Id, Location = model.Location });
             await _appDbContext.SaveChangesAsync();
 
+            var userCommonData = CreateUserCommonDataObject(userIdentity);
+
+            await _userCommonDataRepository.AddUserCommonData(userCommonData);
+
             return new OkObjectResult("Account created");
+        }
+
+        private UserCommonData CreateUserCommonDataObject(AppUser userIdentity)
+        {
+            return new UserCommonData()
+            {
+                UserId = userIdentity.Id,
+                FacebookId = userIdentity.FacebookId,
+                FirstName = userIdentity.FirstName,
+                LastName = userIdentity.LastName,
+                UserName = userIdentity.UserName,
+                UserEmail = userIdentity.Email,
+                UserLevel = 1
+            };
+
         }
     }
 }

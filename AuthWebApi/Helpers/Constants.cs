@@ -1,5 +1,4 @@
-﻿
-namespace AuthWebApi.Helpers
+﻿namespace AuthWebApi.Helpers
 {
     public static class Constants
     {
@@ -13,6 +12,7 @@ namespace AuthWebApi.Helpers
             public static class JwtClaims
             {
                 public const string ApiAccess = "api_access";
+                public const string Admin = "api_control";
             }
         }
     }
