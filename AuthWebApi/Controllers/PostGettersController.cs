@@ -1,13 +1,14 @@
 ﻿using AuthWebApi.IRepository;
-using AuthWebApi.Models.Posts;
-using AuthWebApi.ViewModels.UserProfile;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AuthWebApi.IMySqlRepos;
+using DataAccessLayer.IRepository;
 using Microsoft.AspNetCore.Http;
+using DataModelLayer.Models.Posts;
+using DataModelLayer.ViewModels.UserProfile;
 
 namespace AuthWebApi.Controllers
 {
@@ -64,7 +65,7 @@ namespace AuthWebApi.Controllers
         [Route("GetAllUserPosts")]
         public async Task<IActionResult> GetUsersPosts([FromBody]UserProfileRequest request)
         {
-            var result = await _postRepository.GetUserPosts(request.UserId);
+            var result = await _postRepository.GetUserPosts(request.UserId, request.StartDate);
             return new OkObjectResult(new
             {
                 Message = "Whuhu",

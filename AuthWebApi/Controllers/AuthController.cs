@@ -2,10 +2,9 @@
 using System.Threading.Tasks;
 using AuthWebApi.Auth;
 using AuthWebApi.Helpers;
-using AuthWebApi.IMySqlRepos;
-using AuthWebApi.Models;
-using AuthWebApi.Models.Entities;
-using AuthWebApi.ViewModels;
+using DataModelLayer.Models;
+using DataModelLayer.Models.Entities;
+using DataModelLayer.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;

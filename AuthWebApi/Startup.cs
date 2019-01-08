@@ -7,8 +7,6 @@ using AuthWebApi.Helpers;
 using AuthWebApi.IRepository;
 using AuthWebApi.IUploadHelpers;
 using AuthWebApi.IValidators;
-using AuthWebApi.Models;
-using AuthWebApi.Models.Entities;
 using AuthWebApi.Validators;
 using AutoMapper;
 using FluentValidation.AspNetCore;
@@ -24,12 +22,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using AuthWebApi.UploadHelpers;
-using AuthWebApi.Repository;
 using AuthWebApi.Authorize;
 using AuthWebApi.DataContexts;
 using AuthWebApi.IMySqlRepos;
 using AuthWebApi.MsSqlRepos;
 using AuthWebApi.MySqlRepos;
+using DataAccessLayer.IMySqlRepos;
+using DataAccessLayer.IRepository;
+using DataAccessLayer.MsSqlRepos;
+using DataAccessLayer.MySqlRepos;
+using DataModelLayer.Models;
+using DataModelLayer.Models.Entities;
 
 namespace AuthWebApi
 {
@@ -106,6 +109,7 @@ namespace AuthWebApi
             services.AddTransient<IUserManagementRepository, UserManagementRepository>();
             services.AddTransient<IUserCommonDataRepository, UserCommonDataRepository>();
             services.AddTransient<IReportPostRepository, ReportPostRepository>();
+            services.AddTransient<ITicketsRepository, TicketsRepository>();
             services.AddScoped<RoleManager<IdentityRole>>();
         }
 

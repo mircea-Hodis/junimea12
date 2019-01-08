@@ -1,10 +1,8 @@
 ﻿using AuthWebApi.IValidators;
-using AuthWebApi.ViewModels.Posts;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using DataModelLayer.ViewModels.Posts;
 
 namespace AuthWebApi.Validators
 {
@@ -19,9 +17,7 @@ namespace AuthWebApi.Validators
 
         public bool ValidatePost(PostViewModel post)
         {
-            if (post.Files == null || post.Files.Count == 0)
-                return false;
-            return true;
+            return post.Files == null || post.Files.Count == 0 ? false : true;
         }
 
         public bool ValidateImage(IFormFile image)

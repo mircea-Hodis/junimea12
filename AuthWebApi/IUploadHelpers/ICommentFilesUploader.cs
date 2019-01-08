@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using AuthWebApi.Models.Comments;
+using DataModelLayer.Models.Comments;
 using Microsoft.AspNetCore.Http;
 
 namespace AuthWebApi.IUploadHelpers

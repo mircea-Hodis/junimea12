@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AuthWebApi.DataContexts;
 using AuthWebApi.IRepository;
+using DataAccessLayer.IRepository;
 
 namespace AuthWebApi.Authorize
 {

@@ -1,12 +1,13 @@
 ﻿using AuthWebApi.IUploadHelpers;
-using AuthWebApi.Models.Posts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
+using DataModelLayer.Models.Posts;
 
 namespace AuthWebApi.UploadHelpers
 {
@@ -23,22 +24,39 @@ namespace AuthWebApi.UploadHelpers
         {
             foreach (var formFile in formFiles)
             {
+
                 var uploads = Path.Combine(_environment.ContentRootPath, "images");
                 post.Files.Add(new PostFiles(post.Id, Path.Combine(uploads, GetUniqueFileName(formFile.FileName))));
-                await formFile.CopyToAsync(new FileStream(post.Files.Last().Url, FileMode.Create));
+                var fileStream = new FileStream(post.Files.Last().Url, FileMode.Create);
+                await formFile.CopyToAsync(fileStream);
+                fileStream.Close();
             }
 
             return post;
         }
 
-        private void AddFileToPost(Post post, string url)
+        public async Task<List<PostFiles>> ReplacePostFiles(List<PostFiles> oldFiles, List<IFormFile> newFiles, int postId)
         {
-            post.Files.Add(new PostFiles(post.Id, url));
+            var newFilesList = new List<PostFiles>();
+            foreach (var file in oldFiles)
+            {
+                File.Delete(file.Url);
+            }
+
+            foreach (var newFile in newFiles)
+            {
+                var uploads = Path.Combine(_environment.ContentRootPath, "images");
+                newFilesList.Add(new PostFiles(postId, Path.Combine(uploads, GetUniqueFileName(newFile.FileName))));
+                await newFile.CopyToAsync(new FileStream(newFilesList.Last().Url, FileMode.Create));
+            }
+
+            return newFilesList;
         }
 
-        private string GetUniqueFileName(string fileName)
+        private static string GetUniqueFileName(string fileName)
         {
             fileName = Path.GetFileName(fileName);
+
             return Path.GetFileNameWithoutExtension(fileName)
                       + "_"
                       + Guid.NewGuid().ToString().Substring(0, 4)

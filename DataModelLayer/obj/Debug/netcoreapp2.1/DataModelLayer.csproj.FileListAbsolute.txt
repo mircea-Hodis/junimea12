@@ -1,0 +1,11 @@
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\bin\Debug\netcoreapp2.1\DataModelLayer.deps.json
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\bin\Debug\netcoreapp2.1\DataModelLayer.dll
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\bin\Debug\netcoreapp2.1\Microsoft.Extensions.Identity.Stores.dll
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\bin\Debug\netcoreapp2.1\Newtonsoft.Json.dll
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\bin\Debug\netcoreapp2.1\Microsoft.Extensions.Identity.Stores.xml
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\bin\Debug\netcoreapp2.1\Newtonsoft.Json.xml
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\obj\Debug\netcoreapp2.1\DataModelLayer.csprojAssemblyReference.cache
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\obj\Debug\netcoreapp2.1\DataModelLayer.csproj.CoreCompileInputs.cache
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\obj\Debug\netcoreapp2.1\DataModelLayer.AssemblyInfoInputs.cache
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\obj\Debug\netcoreapp2.1\DataModelLayer.AssemblyInfo.cs
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\obj\Debug\netcoreapp2.1\DataModelLayer.csproj.CopyComplete

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using AuthWebApi.IDataMappingHelpers;
-using AuthWebApi.Models.Posts;
-using AuthWebApi.ViewModels.Posts;
+using DataModelLayer.Models.Posts;
+using DataModelLayer.ViewModels.Posts;
 
 namespace AuthWebApi.DataMappingHelpers
 {

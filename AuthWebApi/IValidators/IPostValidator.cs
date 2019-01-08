@@ -1,4 +1,4 @@
-﻿using AuthWebApi.ViewModels.Posts;
+﻿using DataModelLayer.ViewModels.Posts;
 using Microsoft.AspNetCore.Http;
 
 namespace AuthWebApi.IValidators

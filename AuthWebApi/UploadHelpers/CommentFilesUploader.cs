@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AuthWebApi.IUploadHelpers;
-using AuthWebApi.Models.Comments;
+using DataModelLayer.Models.Comments;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 

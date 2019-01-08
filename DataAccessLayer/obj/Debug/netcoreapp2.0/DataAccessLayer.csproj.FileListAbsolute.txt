@@ -1,0 +1,14 @@
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Debug\netcoreapp2.0\DataAccessLayer.deps.json
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Debug\netcoreapp2.0\DataAccessLayer.dll
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Debug\netcoreapp2.0\DataAccessLayer.pdb
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Debug\netcoreapp2.0\DataModelLayer.dll
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Debug\netcoreapp2.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Debug\netcoreapp2.0\DataModelLayer.pdb
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Debug\netcoreapp2.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.xml
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Debug\netcoreapp2.0\DataAccessLayer.csprojAssemblyReference.cache
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Debug\netcoreapp2.0\DataAccessLayer.csproj.CoreCompileInputs.cache
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Debug\netcoreapp2.0\DataAccessLayer.AssemblyInfoInputs.cache
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Debug\netcoreapp2.0\DataAccessLayer.AssemblyInfo.cs
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Debug\netcoreapp2.0\DataAccessLayer.csproj.CopyComplete
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Debug\netcoreapp2.0\DataAccessLayer.dll
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Debug\netcoreapp2.0\DataAccessLayer.pdb

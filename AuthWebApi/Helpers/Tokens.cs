@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AuthWebApi.Auth;
-using AuthWebApi.Models;
+using DataModelLayer.Models;
 using Newtonsoft.Json;
 
 namespace AuthWebApi.Helpers

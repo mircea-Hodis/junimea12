@@ -1,10 +1,11 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AuthWebApi.Authorize;
 using AuthWebApi.IMySqlRepos;
 using AuthWebApi.IUploadHelpers;
-using AuthWebApi.Models.Comments;
-using AuthWebApi.ViewModels.Posts;
+using DataModelLayer.Models.Comments;
+using DataModelLayer.ViewModels.Posts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ namespace AuthWebApi.Controllers
     [Produces("application/json")]
     [Route("api/Comments")]
     [Authorize]
-        
+
     // ReSharper disable once HollowTypeName
     public class CommentsController : Controller
     {
@@ -49,6 +50,11 @@ namespace AuthWebApi.Controllers
                     });
 
             comment = await _commentRepository.CreateAsync(comment);
+            if (model.Files != null)
+            {
+                comment.Files = await _ulploadHelper.UploadFiles(model.Files, comment.Id);
+                comment = await _commentRepository.AddCommentFiles(comment);
+            }
 
             return new OkObjectResult(new
             {
@@ -72,8 +78,8 @@ namespace AuthWebApi.Controllers
                 Message = model.Comment,
                 UserId = await _authHelper.GetCallerId(_caller),
                 Likes = 0,
-                Files = await _ulploadHelper.UploadFiles(model.Files, model.PostId)
-        };
+                CreateDate = DateTime.Now
+            };
         }
     }
 }

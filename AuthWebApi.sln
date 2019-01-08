@@ -5,6 +5,12 @@ VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthWebApi", "AuthWebApi\AuthWebApi.csproj", "{0733D255-FAF8-4C81-9940-229335E31241}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccessLayer", "DataAccessLayer\DataAccessLayer.csproj", "{0B1893C4-1A18-4329-B2DF-E66290CABB38}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataModelLayer", "DataModelLayer\DataModelLayer.csproj", "{0FF3EBC1-542B-4F86-9569-67392A5FC9E0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{D958379F-76FF-4852-806F-AF73A99F6D5B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +27,22 @@ Global
 		{0733D255-FAF8-4C81-9940-229335E31241}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0733D255-FAF8-4C81-9940-229335E31241}.Release|x64.ActiveCfg = Release|x64
 		{0733D255-FAF8-4C81-9940-229335E31241}.Release|x64.Build.0 = Release|x64
+		{0B1893C4-1A18-4329-B2DF-E66290CABB38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B1893C4-1A18-4329-B2DF-E66290CABB38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B1893C4-1A18-4329-B2DF-E66290CABB38}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0B1893C4-1A18-4329-B2DF-E66290CABB38}.Debug|x64.Build.0 = Debug|Any CPU
+		{0B1893C4-1A18-4329-B2DF-E66290CABB38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B1893C4-1A18-4329-B2DF-E66290CABB38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B1893C4-1A18-4329-B2DF-E66290CABB38}.Release|x64.ActiveCfg = Release|Any CPU
+		{0B1893C4-1A18-4329-B2DF-E66290CABB38}.Release|x64.Build.0 = Release|Any CPU
+		{0FF3EBC1-542B-4F86-9569-67392A5FC9E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FF3EBC1-542B-4F86-9569-67392A5FC9E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FF3EBC1-542B-4F86-9569-67392A5FC9E0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0FF3EBC1-542B-4F86-9569-67392A5FC9E0}.Debug|x64.Build.0 = Debug|Any CPU
+		{0FF3EBC1-542B-4F86-9569-67392A5FC9E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FF3EBC1-542B-4F86-9569-67392A5FC9E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FF3EBC1-542B-4F86-9569-67392A5FC9E0}.Release|x64.ActiveCfg = Release|Any CPU
+		{0FF3EBC1-542B-4F86-9569-67392A5FC9E0}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

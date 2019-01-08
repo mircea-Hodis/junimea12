@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using AuthWebApi.Models.Posts;
 using Microsoft.AspNetCore.Http;
 
 namespace AuthWebApi.PostFilesUpload

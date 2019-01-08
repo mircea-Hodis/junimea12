@@ -2,9 +2,9 @@
 using AuthWebApi.DataContexts;
 using AuthWebApi.Helpers;
 using AuthWebApi.IMySqlRepos;
-using AuthWebApi.Models.Entities;
-using AuthWebApi.ViewModels;
 using AutoMapper;
+using DataModelLayer.Models.Entities;
+using DataModelLayer.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -62,7 +62,7 @@ namespace AuthWebApi.Controllers
             return new UserCommonData()
             {
                 UserId = userIdentity.Id,
-                FacebookId = userIdentity.FacebookId,
+                FacebookId = userIdentity.FacebookId != null ? userIdentity.FacebookId : 0,
                 FirstName = userIdentity.FirstName,
                 LastName = userIdentity.LastName,
                 UserName = userIdentity.UserName,

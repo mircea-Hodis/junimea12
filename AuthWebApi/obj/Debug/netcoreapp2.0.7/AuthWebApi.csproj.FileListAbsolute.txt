@@ -1,0 +1,14 @@
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\bin\Debug\netcoreapp2.0.7\AuthWebApi.deps.json
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\bin\Debug\netcoreapp2.0.7\AuthWebApi.runtimeconfig.json
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\bin\Debug\netcoreapp2.0.7\AuthWebApi.runtimeconfig.dev.json
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\bin\Debug\netcoreapp2.0.7\AuthWebApi.dll
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\bin\Debug\netcoreapp2.0.7\AuthWebApi.pdb
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\bin\Debug\netcoreapp2.0.7\DataAccessLayer.dll
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\bin\Debug\netcoreapp2.0.7\DataModelLayer.dll
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\bin\Debug\netcoreapp2.0.7\DataAccessLayer.pdb
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\bin\Debug\netcoreapp2.0.7\DataModelLayer.pdb
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\obj\Debug\netcoreapp2.0.7\AuthWebApi.csprojAssemblyReference.cache
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\obj\Debug\netcoreapp2.0.7\AuthWebApi.csproj.CoreCompileInputs.cache
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\obj\Debug\netcoreapp2.0.7\AuthWebApi.csproj.CopyComplete
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\obj\Debug\netcoreapp2.0.7\AuthWebApi.dll
+C:\Users\User\source\repos\juni\junimea\AuthWebApi\obj\Debug\netcoreapp2.0.7\AuthWebApi.pdb

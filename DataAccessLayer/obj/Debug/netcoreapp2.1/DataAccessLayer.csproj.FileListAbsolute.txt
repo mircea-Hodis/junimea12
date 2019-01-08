@@ -1,0 +1,9 @@
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Debug\netcoreapp2.1\DataAccessLayer.deps.json
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Debug\netcoreapp2.1\DataAccessLayer.dll
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Debug\netcoreapp2.1\DataAccessLayer.pdb
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Debug\netcoreapp2.1\DataAccessLayer.csprojAssemblyReference.cache
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Debug\netcoreapp2.1\DataAccessLayer.csproj.CoreCompileInputs.cache
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Debug\netcoreapp2.1\DataAccessLayer.AssemblyInfoInputs.cache
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Debug\netcoreapp2.1\DataAccessLayer.AssemblyInfo.cs
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Debug\netcoreapp2.1\DataAccessLayer.dll
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Debug\netcoreapp2.1\DataAccessLayer.pdb

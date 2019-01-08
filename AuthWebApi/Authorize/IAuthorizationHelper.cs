@@ -6,6 +6,6 @@ namespace AuthWebApi.Authorize
     public interface IAuthorizationHelper
     {
         Task<string> GetCallerId(ClaimsPrincipal caller);
-        Task<bool> CheckIfUserIsBanned(string UserId);
+        Task<bool> CheckIfUserIsBanned(string userId);
     }
 }

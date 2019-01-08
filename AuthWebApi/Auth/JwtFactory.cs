@@ -4,7 +4,7 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using AuthWebApi.IRepository;
-using AuthWebApi.Models;
+using DataModelLayer.Models;
 using Microsoft.Extensions.Options;
 
 namespace AuthWebApi.Auth
