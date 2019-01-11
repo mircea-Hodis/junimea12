@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using DataModelLayer.Models.Posts;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace AuthWebApi.UploadHelpers
 {
@@ -51,6 +52,22 @@ namespace AuthWebApi.UploadHelpers
             }
 
             return newFilesList;
+        }
+
+        public void DeleteFiles(Post post)
+        {
+            foreach (var file in post.Files)
+            {
+                File.Delete(file.Url);
+            }
+
+            foreach (var comment in post.Comments)
+            {
+                foreach (var file in comment.Files)
+                {
+                    File.Delete(file.Url);
+                }
+            }
         }
 
         private static string GetUniqueFileName(string fileName)

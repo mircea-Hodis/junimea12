@@ -7,7 +7,9 @@ namespace AuthWebApi.IMySqlRepos
     public interface ICommentRepository
     {
         Task<Comment> CreateAsync(Comment comment);
-        Task<List<Comment>> GetPostComments(int postId);
         Task<Comment> AddCommentFiles(Comment comment);
+        Task<DeleteCommentResponse> DeleteComment(int commentId, string callerId);
+        Task<Comment> UpdateComment(UpdateComment updateComment);
+        Task UpdateCommentImages(List<CommentFiles> postFiles, long commentId);
     }
 }

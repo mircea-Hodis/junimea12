@@ -8,5 +8,6 @@ namespace AuthWebApi.IUploadHelpers
     public interface ICommentFilesUploader
     {
         Task<List<CommentFiles>> UploadFiles(List<IFormFile> commentFiles, long postId);
+        void DeleteCommentFiles(List<CommentFiles> toBeDeletedCommetnFiles);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DataModelLayer.Models.Comments;
 using DataModelLayer.Models.Posts;
 
 namespace DataAccessLayer.IRepository
@@ -14,5 +15,6 @@ namespace DataAccessLayer.IRepository
         Task<PostLike> LikePost(PostLike like);
         Task<DeletePostResponse> DeletePost(int postId, string callerId);
         Task<int> UpdatePostAsync(UpdatePost updatePost);
+        Task<List<Comment>> GetRemainingComments(int postId, DateTime lastCommentDate);
     }
 }

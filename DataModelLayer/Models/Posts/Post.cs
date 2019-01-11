@@ -32,6 +32,8 @@ namespace DataModelLayer.Models.Posts
         public int LikeCount { get; set; }
         [NotMapped]
         public List<Comment> Comments { get; set; }
+        [NotMapped]
+        public bool AreStillCommentsToGet { get; set; }
     }
 
     public class UpdatePostViewModel
@@ -62,6 +64,7 @@ namespace DataModelLayer.Models.Posts
     {
         public string Message { get; set; }
         public bool Successfull { get; set; }
+        public Post Post { get; set; }
     }
 
     public class PostFiles

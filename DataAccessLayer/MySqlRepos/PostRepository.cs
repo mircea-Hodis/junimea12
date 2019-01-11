@@ -70,9 +70,10 @@ namespace DataAccessLayer.MySqlRepos
                         WHERE Id=@postId;";
             var deletePostLikes = $@" 
                         DELETE FROM juniro.postLikes
-                        WHERE Id=@postId;";
+                        WHERE PostId=@postId;";
+          
             int affectedRows;
-
+            var toBeDeletedPost = await GetPostById(postId);
             using (var connection = new MySqlConnection(_connectionString))
             {
                 affectedRows = await connection.ExecuteAsync(deletePostQuery, new { postId, callerId });
@@ -80,6 +81,7 @@ namespace DataAccessLayer.MySqlRepos
                 {
                     await connection.ExecuteAsync(deletePostFilesQuery, new { postId });
                     await connection.ExecuteAsync(deletePostLikes, new { postId });
+                    await DeleteComment(toBeDeletedPost.Comments, toBeDeletedPost.Id, connection);
                 }
             }
 
@@ -87,13 +89,33 @@ namespace DataAccessLayer.MySqlRepos
                 ? new DeletePostResponse
                 {
                     Message = "Post successfully deleted.",
-                    Successfull = true
+                    Successfull = true,
+                    Post = toBeDeletedPost
                 }
                 : new DeletePostResponse
                 {
                     Message = "You cannot delete this post.",
-                    Successfull = false
+                    Successfull = false,
+                    Post = toBeDeletedPost
+
                 };
+        }
+
+        private async Task DeleteComment(List<Comment> comments, int postId, MySqlConnection connection)
+        {
+            var deletePostComments = $@"
+                        DELETE FROM juniro.comments 
+                        where PostId = @postId";
+            var deletePostCommentsFiles = $@" 
+                        DELETE FROM juniro.comment_files
+                        WHERE CommentId=@commentId;";
+            await connection.ExecuteAsync(deletePostComments, new {postId});
+            await connection.ExecuteAsync(deletePostComments, new {postId});
+            foreach (var comment in comments)
+            {
+                var commentId = comment.Id;
+                await connection.ExecuteAsync(deletePostCommentsFiles, new {commentId});
+            }
         }
 
         private async Task<Post> AddUserDataToPost(Post post)
@@ -210,22 +232,66 @@ namespace DataAccessLayer.MySqlRepos
                             comments.Message, 
                             comments.Likes, 
                             comments.PostId, 
-                            comments.UserId
+                            comments.UserId,
+                            comments.CreateDate,
+                            AppUser.FirstName,
+                            AppUser.LastName,
+                            AppUser.FacebookId
                         FROM juniro.comments AS comments
+                            INNER JOIN
+                            juniro.usercommondata as AppUser on comments.UserId = AppUser.UserId
                         WHERE comments.PostId = @postId
-                        LIMIT 10";
+                        ORDER BY comments.CreateDate
+                        LIMIT 5 
+                        ";
 
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var comments = await connection.QueryAsync<Comment>(query, new { postId });
 
                 post.Comments = comments.AsList();
+                if (post.Comments.Count == 5)
+                {
+                    post.AreStillCommentsToGet = true;
+                }
                 foreach (var comment in post.Comments)
                 {
                     comment.Files = await GetCommentFiles(comment.Id, connection);
                 }
             }
             return post;
+        }
+
+        public async Task<List<Comment>> GetRemainingComments(int postId, DateTime lastCommentDate)
+        {
+            var query = $@"SELECT
+                            comments.Id,
+                            comments.Message, 
+                            comments.Likes, 
+                            comments.PostId, 
+                            comments.UserId,
+                            comments.CreateDate,
+                            AppUser.FirstName,
+                            AppUser.LastName,
+                            AppUser.FacebookId
+                        FROM juniro.comments AS comments
+                            INNER JOIN
+                            juniro.usercommondata as AppUser on comments.UserId = AppUser.UserId
+                        WHERE comments.PostId = @postId AND comments.CreateDate > @lastCommentDate
+                        LIMIT 10";
+            List<Comment> result;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var queryResult = await connection.QueryAsync<Comment>(query, new {postId, lastCommentDate});
+                result = queryResult.AsList();
+
+                foreach (var comment in result)
+                {
+                    comment.Files = await GetCommentFiles(comment.Id, connection);
+                }
+            }
+
+            return result;
         }
 
         private async Task<List<CommentFiles>> GetCommentFiles(long commentId, MySqlConnection connection)

@@ -22,7 +22,7 @@ namespace DataAccessLayer.MySqlRepos
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                comment.Id = await connection.ExecuteAsync(
+                comment.Id = await connection.QuerySingleAsync<int>(
                     $@"INSERT INTO juniro.comments(
                         PostId,
                         Message,
@@ -42,37 +42,112 @@ namespace DataAccessLayer.MySqlRepos
             return await AddUserDataToComment(comment);
         }
 
-        public async Task<DeleteCommentResponse> DeletePost(int commentId, string callerId)
+        public async Task<Comment> UpdateComment(UpdateComment updateComment)
+        {
+            var query = $@"UPDATE juniro.comments
+                    SET 
+                    Message = '{updateComment.Comment}'
+                    WHERE Id = {updateComment.Id} AND UserId = '{updateComment.UserId}';";
+            var result = new Comment();
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var affectedRows = await connection.ExecuteAsync(query, new { updateComment });
+                if (affectedRows > 0)
+                    result = await GetSingleComment(updateComment.Id, connection);
+            }
+
+            return result;
+        }
+
+        private async Task<Comment> GetSingleComment(long commentId, MySqlConnection connection)
+        {
+            var query = $@"SELECT
+                            comments.Id,
+                            comments.Message, 
+                            comments.Likes, 
+                            comments.PostId, 
+                            comments.UserId,
+                            comments.CreateDate,
+                            AppUser.FirstName,
+                            AppUser.LastName,
+                            AppUser.FacebookId
+                        FROM juniro.comments AS comments
+                            INNER JOIN
+                            juniro.usercommondata as AppUser on comments.UserId = AppUser.UserId
+                        WHERE comments.Id = @commentId";
+
+            var comment = await connection.QueryFirstOrDefaultAsync<Comment>(query, new {commentId});
+            comment.Files = await GetCommentFiles(comment.Id, connection);
+            return comment;
+        }
+
+        private async Task<List<CommentFiles>> GetCommentFiles(long commentId, MySqlConnection connection)
+        {
+            var query = $@"SELECT
+                            files.Id, 
+                            files.CommentId, 
+                            files.Url
+                        FROM juniro.comment_files AS files
+                        WHERE files.CommentId = @commentId";
+
+            var result = await connection.QueryAsync<CommentFiles>(query, new { commentId });
+
+            return result.AsList();
+        }
+
+        public async Task UpdateCommentImages(List<CommentFiles> postFiles, long commentId)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync($@"DELETE FROM juniro.comment_files WHERE CommentId = {commentId}");
+
+                foreach (var file in postFiles)
+                {
+                    file.Id = await connection.QuerySingleAsync<int>(
+                        $@"INSERT INTO juniro.comment_files(
+                                CommentId, 
+                                Url)
+                            VALUES (
+                                @{nameof(file.CommentId)},
+                                @{nameof(file.Url)});
+                            SELECT LAST_INSERT_ID();"
+                        , file);
+                }
+            }
+        }
+
+        public async Task<DeleteCommentResponse> DeleteComment(int commentId, string callerId)
         {
             var deleteCommentQuery = $@"
                         DELETE FROM juniro.comments
                         WHERE Id=@commentId AND UserId = @callerId;";
             var deleteCommentFileQuery = $@" 
-                        DELETE FROM juniro.postfiles
-                        WHERE Id=@commentId;";
-          
-            int affectedRows;
-
+                        DELETE FROM juniro.comment_files
+                        WHERE CommentId=@commentId;";
+            var toBeDeletedCommentFiles = $@"
+                        SELECT * FROM juniro.comment_files
+                        WHERE CommentId=@commentId";
+            var result = new DeleteCommentResponse()
+            {
+                Message = "You cannot delete this comment.",
+                Successfull = false,
+                RemainingFiles = new List<CommentFiles>()
+            };
             using (var connection = new MySqlConnection(_connectionString))
             {
-                affectedRows = await connection.ExecuteAsync(deleteCommentQuery, new { postId = commentId, callerId });
-                if (affectedRows > 0)
-                {
-                    await connection.ExecuteAsync(deleteCommentFileQuery, new { postId = commentId });
-                }
+                var affectedRows = await connection.ExecuteAsync(deleteCommentQuery, new { commentId, callerId });
+
+                if (affectedRows <= 0) return result;
+
+                var files = await connection.QueryAsync<CommentFiles>(toBeDeletedCommentFiles, new { commentId });
+                await connection.ExecuteAsync(deleteCommentFileQuery, new { commentId });
+
+                result.RemainingFiles = files.AsList();
+                result.Message = "Comment successfully deleted.";
+                result.Successfull = true;
             }
 
-            return affectedRows > 0
-                ? new DeleteCommentResponse
-                {
-                    Message = "Comment successfully deleted.",
-                    Successfull = true
-                }
-                : new DeleteCommentResponse
-                {
-                    Message = "You cannot delete this comment.",
-                    Successfull = false
-                };
+            return result;
         }
 
         private async Task<Comment> AddUserDataToComment(Comment comment)
@@ -88,8 +163,8 @@ namespace DataAccessLayer.MySqlRepos
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var entityCommonData = await connection.QuerySingleAsync<EntityCommonData>(query, new {userId});
-                comment.UserFirstName = entityCommonData.FirstName;
-                comment.UserLastName= entityCommonData.LastName;
+                comment.FirstName = entityCommonData.FirstName;
+                comment.LastName= entityCommonData.LastName;
                 comment.FacebookId = entityCommonData.FacebookId;
             }
 
@@ -116,43 +191,7 @@ namespace DataAccessLayer.MySqlRepos
             return comment;
         }
 
-        public async Task<List<Comment>> GetPostComments(int postId)
-        {
-            var query = $@"SELECT
-                            comments.Id,
-                            comments.Message, 
-                            comments.Likes, 
-                            comments.PostId, 
-                            comments.UserId
-                        FROM juniro.comments AS comments
-                        WHERE comments.UpdatedPostId = @postId
-                        LIMIT 10";
-
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                var result = await connection.QueryAsync<Comment>(query, new { postId });
-
-                var comments = result.AsList();
-                foreach (var comment in comments)
-                {
-                    comment.Files = await GetCommentFiles(comment.Id, connection);
-                }
-                return comments;
-            }
-        }
-
-        private async Task<List<CommentFiles>> GetCommentFiles(long commentId, MySqlConnection connection)
-        {
-            var query = $@"SELECT
-                            files.Id, 
-                            files.CommentId, 
-                            files.Url
-                        FROM juniro.comment_files AS files
-                        WHERE files.CommentId = @commentId";
-
-            var result = await connection.QueryAsync<CommentFiles>(query, new { commentId });
-
-            return result.AsList();
-        }
+     
+   
     }
 }

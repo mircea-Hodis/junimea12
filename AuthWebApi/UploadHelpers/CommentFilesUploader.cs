@@ -19,17 +19,27 @@ namespace AuthWebApi.UploadHelpers
             _environment = environment;
         }
 
-        public async Task<List<CommentFiles>> UploadFiles(List<IFormFile> commentFiles, long postId)
+        public async Task<List<CommentFiles>> UploadFiles(List<IFormFile> commentFiles, long commentId)
         {
             var files = new List<CommentFiles>();
             foreach (var file in commentFiles)
             {
                 var uploads = Path.Combine(_environment.ContentRootPath, "images");
-                files.Add(new CommentFiles(postId, Path.Combine(uploads, GetUniqueFileName(file.FileName))));
-                await file.CopyToAsync(new FileStream(files.Last().Url, FileMode.Create));
+                files.Add(new CommentFiles(commentId, Path.Combine(uploads, GetUniqueFileName(file.FileName))));
+                var fileStream = new FileStream(files.Last().Url, FileMode.Create);
+                await file.CopyToAsync(fileStream);
+                fileStream.Close();
             }
 
             return files;
+        }
+
+        public void DeleteCommentFiles(List<CommentFiles> toBeDeletedCommetnFiles)
+        {
+            foreach (var file in toBeDeletedCommetnFiles)
+            {
+                File.Delete(file.Url);
+            }
         }
 
         private string GetUniqueFileName(string fileName)

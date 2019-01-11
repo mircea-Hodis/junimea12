@@ -23,7 +23,7 @@ namespace AuthWebApi.MySqlRepos
                             FirstName,
                             LastName,
                             UserEmail,
-                            UpdatedByUserId,
+                            UserId,
                             UserLevel,
                             UserName)
                         Values(

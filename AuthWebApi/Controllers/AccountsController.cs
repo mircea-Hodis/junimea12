@@ -19,6 +19,7 @@ namespace AuthWebApi.Controllers
         private readonly IMapper _mapper;
         private readonly IUserCommonDataRepository _userCommonDataRepository;
 
+        // ReSharper disable once TooManyDependencies
         public AccountsController(UserManager<AppUser> userManager,
                                  IMapper mapper,
                                  MsSqlUserDbContext appDbContext,
@@ -59,10 +60,10 @@ namespace AuthWebApi.Controllers
 
         private UserCommonData CreateUserCommonDataObject(AppUser userIdentity)
         {
-            return new UserCommonData()
+            return new UserCommonData
             {
                 UserId = userIdentity.Id,
-                FacebookId = userIdentity.FacebookId != null ? userIdentity.FacebookId : 0,
+                FacebookId = userIdentity.FacebookId ?? 0,
                 FirstName = userIdentity.FirstName,
                 LastName = userIdentity.LastName,
                 UserName = userIdentity.UserName,

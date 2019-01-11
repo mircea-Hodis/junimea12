@@ -62,6 +62,18 @@ namespace AuthWebApi.Controllers
         }
 
         [HttpPost]
+        [Route("GetAdditionalComments")]
+        public async Task<IActionResult> GetAdditionalComments([FromBody]GetAdditionalComments request)
+        {
+            var result = await _postRepository.GetRemainingComments(request.PostId, request.LastCommentDate);
+            return new OkObjectResult(new
+            {
+                Message = "Whuhu",
+                result
+            });
+        }
+
+        [HttpPost]
         [Route("GetAllUserPosts")]
         public async Task<IActionResult> GetUsersPosts([FromBody]UserProfileRequest request)
         {

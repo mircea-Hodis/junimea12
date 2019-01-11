@@ -10,8 +10,7 @@ namespace AuthWebApi.IUploadHelpers
     {
         Task<Post> UploadFiles(List<IFormFile> formFiles, Post post);
         Task<List<PostFiles>> ReplacePostFiles(List<PostFiles> oldFiles, List<IFormFile> newFiles, int postId);
+        void DeleteFiles(Post post);
 
-
-        //Task<Ticket> UploadTicketFiles(List<IFormFile> formFiles, Ticket ticket);
     }
 }

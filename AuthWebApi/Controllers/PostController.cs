@@ -59,8 +59,6 @@ namespace AuthWebApi.Controllers
 
             post = await _postRepository.CreateAsync(post);
 
-            var x = model.Files.First().ContentType;
-
             // ReSharper disable once ComplexConditionExpression
             if (model.Files == null || !model.Files.Any())
                 return new OkObjectResult(new
@@ -120,7 +118,6 @@ namespace AuthWebApi.Controllers
                 });
         }
 
-
         [HttpPost]
         [Route("DeletePost")]
         public async Task<IActionResult> DeletePost([FromBody] DeletePostViewModel deletePostViewModel)
@@ -136,7 +133,7 @@ namespace AuthWebApi.Controllers
                     });
 
             var result = await _postRepository.DeletePost(deletePostViewModel.PostId, callerId);
-            
+            _postFilesUploadHelper.DeleteFiles(result.Post);
             if(result.Successfull)
                 return new OkObjectResult(new
                 {
