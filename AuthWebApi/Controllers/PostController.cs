@@ -94,7 +94,7 @@ namespace AuthWebApi.Controllers
 
             var result = await _postRepository.UpdatePostAsync(new UpdatePost(viewModel, callerId));
 
-            var post = await _postRepository.GetPostById(viewModel.Id);
+            var post = await _postRepository.GetPostById(viewModel.Id, callerId);
 
             post.Files = await _postFilesUploadHelper.ReplacePostFiles(post.Files, viewModel.Files, post.Id);
 
@@ -161,6 +161,7 @@ namespace AuthWebApi.Controllers
         [Route("LikePost")]
         public async Task<IActionResult> LikePost([FromBody]LikePostViewModel viewModel)
         {
+            
             var postLike = new PostLike
             {
                 // ReSharper disable once TooManyChainedReferences

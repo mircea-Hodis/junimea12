@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using DataModelLayer.Models.Comments;
 
-namespace AuthWebApi.IMySqlRepos
+namespace DataAccessLayer.IMySqlRepos
 {
     public interface ICommentRepository
     {
@@ -11,5 +11,6 @@ namespace AuthWebApi.IMySqlRepos
         Task<DeleteCommentResponse> DeleteComment(int commentId, string callerId);
         Task<Comment> UpdateComment(UpdateComment updateComment);
         Task UpdateCommentImages(List<CommentFiles> postFiles, long commentId);
+        Task<CommentLike> LikeComment(CommentLike like);
     }
 }

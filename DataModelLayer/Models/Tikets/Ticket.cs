@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DataModelLayer.Models.Entities;
 using Microsoft.AspNetCore.Http;
 
 namespace DataModelLayer.Models.Tikets
@@ -13,18 +14,24 @@ namespace DataModelLayer.Models.Tikets
         public int Id { get; set; }
         public string TicketIssuerUserId { get; set; }
         public string Message { get; set; }
+        public bool IsPending { get; set; }
         public bool IsAddressed { get; set; }
         public string AddressedMessage { get; set; }
         public string AddressedById { get; set; }
-        public List<TicketFile> TicketFiles { get; set; }
         public DateTime CreatedDate { get; set; }
+        [NotMapped]
+        public EntityCommonData CommonData { get; set; }
     }
 
     public class TicketsViewModel
     {
-        public string TicketIssuerUserId { get; set; }
         public string Message { get; set; }
-        public List<IFormFile> TicketFiles { get; set; }
+    }
+
+    public class AddressTicketViewModel
+    {
+        public int TicketId { get; set; }
+        public string Message { get; set; }
     }
 
     public class ReportEntity
@@ -40,7 +47,6 @@ namespace DataModelLayer.Models.Tikets
         public string AddressedMessage { get; set; }
         public string AddressedById { get; set; }
         public bool IsAddressed { get; set; }
-        public List<ReportFile> ReportFiles { get; set; }
         public DateTime CreatedDate { get; set; }
     }
 

@@ -18,7 +18,7 @@ namespace AuthWebApi.Migrations.MysqlDb
 
             modelBuilder.Entity("DataModelLayer.Models.Comments.Comment", b =>
                 {
-                    b.Property<long>("UpdatedPostId")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("CreateDate");
@@ -27,38 +27,58 @@ namespace AuthWebApi.Migrations.MysqlDb
 
                     b.Property<string>("Message");
 
-                    b.Property<int>("UpdatedPostId");
+                    b.Property<int>("PostId");
 
-                    b.Property<string>("UpdatedByUserId")
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasMaxLength(50);
 
-                    b.HasKey("UpdatedPostId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("UpdatedByUserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("DataModelLayer.Models.Comments.CommentFiles", b =>
                 {
-                    b.Property<long>("UpdatedPostId")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<long>("CommentId");
 
                     b.Property<string>("Url");
 
-                    b.HasKey("UpdatedPostId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CommentId");
 
                     b.ToTable("Comment_Files");
                 });
 
+            modelBuilder.Entity("DataModelLayer.Models.Comments.CommentLike", b =>
+                {
+                    b.Property<long>("LikeId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<long>("CommentId");
+
+                    b.Property<int>("LikeCount");
+
+                    b.Property<DateTime>("LikeTime");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("LikeId");
+
+                    b.HasIndex("CommentId");
+
+                    b.ToTable("CommentLikes");
+                });
+
             modelBuilder.Entity("DataModelLayer.Models.Entities.UserCommonData", b =>
                 {
-                    b.Property<int>("UpdatedPostId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<long?>("FacebookId");
@@ -69,53 +89,53 @@ namespace AuthWebApi.Migrations.MysqlDb
 
                     b.Property<string>("UserEmail");
 
-                    b.Property<string>("UpdatedByUserId");
+                    b.Property<string>("UserId");
 
                     b.Property<int>("UserLevel");
 
                     b.Property<string>("UserName");
 
-                    b.HasKey("UpdatedPostId");
+                    b.HasKey("Id");
 
                     b.ToTable("UserCommonData");
                 });
 
             modelBuilder.Entity("DataModelLayer.Models.Posts.Post", b =>
                 {
-                    b.Property<int>("UpdatedPostId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("CreatedDate");
 
-                    b.Property<string>("UpdatedDescription");
+                    b.Property<string>("Description");
 
                     b.Property<int>("Likes");
 
-                    b.Property<string>("UpdatedPostTtile");
+                    b.Property<string>("PostTtile");
 
-                    b.Property<string>("UpdatedByUserId")
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasMaxLength(50);
 
-                    b.HasKey("UpdatedPostId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("UpdatedByUserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("DataModelLayer.Models.Posts.PostFiles", b =>
                 {
-                    b.Property<int>("UpdatedPostId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("UpdatedPostId");
+                    b.Property<int>("PostId");
 
                     b.Property<string>("Url");
 
-                    b.HasKey("UpdatedPostId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("UpdatedPostId");
+                    b.HasIndex("PostId");
 
                     b.ToTable("PostFiles");
                 });
@@ -129,9 +149,9 @@ namespace AuthWebApi.Migrations.MysqlDb
 
                     b.Property<DateTime>("LikeTime");
 
-                    b.Property<int>("UpdatedPostId");
+                    b.Property<int>("PostId");
 
-                    b.Property<string>("UpdatedByUserId");
+                    b.Property<string>("UserId");
 
                     b.HasKey("LikeId");
 
@@ -140,12 +160,12 @@ namespace AuthWebApi.Migrations.MysqlDb
 
             modelBuilder.Entity("DataModelLayer.Models.Tikets.ReportEntity", b =>
                 {
-                    b.Property<int>("UpdatedPostId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AddresedMessage");
+                    b.Property<string>("AddressedById");
 
-                    b.Property<string>("ReportedByUserId");
+                    b.Property<string>("AddressedMessage");
 
                     b.Property<DateTime>("CreatedDate");
 
@@ -155,51 +175,35 @@ namespace AuthWebApi.Migrations.MysqlDb
 
                     b.Property<string>("Message");
 
+                    b.Property<string>("ReportedByUserId");
+
                     b.Property<int>("ReportedEntityId");
 
-                    b.HasKey("UpdatedPostId");
+                    b.HasKey("Id");
 
                     b.ToTable("ReportEntity");
                 });
 
-            modelBuilder.Entity("DataModelLayer.Models.Tikets.TicketFile", b =>
-                {
-                    b.Property<int>("UpdatedPostId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Url");
-
-                    b.Property<int?>("ReportEntityId");
-
-                    b.Property<int>("ReportedEntityTypeId");
-
-                    b.Property<int?>("TicketsId");
-
-                    b.HasKey("UpdatedPostId");
-
-                    b.HasIndex("ReportEntityId");
-
-                    b.HasIndex("TicketsId");
-
-                    b.ToTable("TicketFile");
-                });
-
             modelBuilder.Entity("DataModelLayer.Models.Tikets.Ticket", b =>
                 {
-                    b.Property<int>("UpdatedPostId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AddresedMessage");
+                    b.Property<string>("AddressedById");
+
+                    b.Property<string>("AddressedMessage");
 
                     b.Property<DateTime>("CreatedDate");
 
                     b.Property<bool>("IsAddressed");
 
+                    b.Property<bool>("IsPending");
+
                     b.Property<string>("Message");
 
                     b.Property<string>("TicketIssuerUserId");
 
-                    b.HasKey("UpdatedPostId");
+                    b.HasKey("Id");
 
                     b.ToTable("Ticket");
                 });
@@ -208,19 +212,8 @@ namespace AuthWebApi.Migrations.MysqlDb
                 {
                     b.HasOne("DataModelLayer.Models.Posts.Post")
                         .WithMany("Files")
-                        .HasForeignKey("UpdatedPostId")
+                        .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("DataModelLayer.Models.Tikets.TicketFile", b =>
-                {
-                    b.HasOne("DataModelLayer.Models.Tikets.ReportEntity")
-                        .WithMany("ReportFiles")
-                        .HasForeignKey("ReportEntityId");
-
-                    b.HasOne("DataModelLayer.Models.Tikets.Ticket")
-                        .WithMany("TicketFile")
-                        .HasForeignKey("TicketsId");
                 });
 #pragma warning restore 612, 618
         }

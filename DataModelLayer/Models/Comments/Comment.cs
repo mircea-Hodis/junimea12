@@ -16,6 +16,8 @@ namespace DataModelLayer.Models.Comments
         public string Message { get; set; }
         public int Likes { get; set; }
         [NotMapped]
+        public int CurrentUserLikeStatus { get; set; }
+        [NotMapped]
         public long FacebookId { get; set;}
         [Required]
         [MaxLength(50)]
@@ -52,6 +54,12 @@ namespace DataModelLayer.Models.Comments
         public List<IFormFile> Files { get; set; }
     }
 
+    public class LikeCommentViewModel
+    {
+        public int PostId { get; set; }
+        public int Value { get; set; }
+    }
+
     public class DeleteComment
     {
         public int CommentId { get; set; }
@@ -78,6 +86,11 @@ namespace DataModelLayer.Models.Comments
             Url = url;
         }
 
+        public CommentFiles()
+        {
+            
+        }
+
         public CommentFiles(long id, long commentId, string url)
         {
             Id = id;
@@ -86,11 +99,15 @@ namespace DataModelLayer.Models.Comments
         }
     }
 
-    public class CommentLikes
+    public class CommentLike
     {
         [Key]
-        public string Id { get; set; }
-        public long CommentId { get; set; }
+        public long LikeId { get; set; }
         public string UserId { get; set; }
+        public long CommentId { get; set; }
+        public DateTime LikeTime { get; set; }
+        public int LikeCount { get; set; }
+        [NotMapped]
+        public int CommentLikeCount { get; set; }
     }
 }

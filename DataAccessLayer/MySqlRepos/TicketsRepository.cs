@@ -2,8 +2,10 @@
 using System.Threading.Tasks;
 using Dapper;
 using DataAccessLayer.IMySqlRepos;
+using DataModelLayer.Models.Entities;
 using DataModelLayer.Models.Tikets;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using MySql.Data.MySqlClient;
 
 namespace DataAccessLayer.MySqlRepos
@@ -17,43 +19,64 @@ namespace DataAccessLayer.MySqlRepos
             _mysqlConnectionString = configurationService.GetConnectionString("MysqlConnection");
         }
 
-        public async Task<int> CreateTicket(Ticket ticket, string callerId)
+        public async Task<Ticket> CreateTicket(Ticket ticket, string callerId)
         {
             using (var connection = new MySqlConnection(_mysqlConnectionString))
             {
                 ticket.Id = await connection.QuerySingleAsync<int>(
-                    $@"INSERT INTO juniro.Posts(
-                        CreatedDate,
+                    $@"INSERT INTO juniro.ticket(
+                        TicketIssuerUserId,
                         Message,
-                        TicketIssuerUserId)
+                        IsPending,
+                        IsAddressed,
+                        AddressedMessage,
+                        AddressedById,
+                        CreatedDate)
                     VALUES (
-                        @{nameof(ticket.CreatedDate)},
+                        @{nameof(ticket.TicketIssuerUserId)},
                         @{nameof(ticket.Message)},
-                        @{nameof(ticket.TicketIssuerUserId)}
+                        @{nameof(ticket.IsPending)},
+                        @{nameof(ticket.IsAddressed)},
+                        @{nameof(ticket.AddressedMessage)},
+                        @{nameof(ticket.AddressedById)},
+                        @{nameof(ticket.CreatedDate)});
                     SELECT LAST_INSERT_ID();",
                     ticket);
+                ticket.CommonData = await AddUserDataToTicket(ticket, connection);
             }
-            return ticket.Id;
+            
+            return ticket;
         }
 
-        public async Task<Ticket> AddFilesToTicket(Ticket ticket)
+        private async Task<EntityCommonData> AddUserDataToTicket(Ticket ticket, MySqlConnection connection)
         {
+            var userId = ticket.TicketIssuerUserId;
+            var query = $@"SELECT 
+                            userCommonData.FacebookId, 
+                            userCommonData.FirstName, 
+                            userCommonData.LastName 
+                        FROM juniro.usercommondata AS userCommonData
+                        WHERE userCommonData.UserId = @userId
+                        ";
+            return await connection.QueryFirstOrDefaultAsync<EntityCommonData>(query, new { userId });
+        }
+
+        public async Task<bool> AddressTicket(AddressTicketViewModel model, DateTime stagedDate, string stagedByUserId)
+        {
+            int result;
             using (var connection = new MySqlConnection(_mysqlConnectionString))
             {
-                foreach (var file in ticket.TicketFiles)
-                {
-                    file.Id = await connection.ExecuteAsync(string.Concat(
-                        "INSERT INTO juniro.ticket_files(",
-                        "CommentId,",
-                        "Url)",
-                        " Values(",
-                        $"@{nameof(file.Id)}, ",
-                        $"@{nameof(file.Url)} ",
-                        ")",
-                        "; SELECT LAST_INSERT_ID();"), file);
-                }
+                var query = $@"Update juniro.ticket
+                               Set
+                               IsPending = {false},
+                               IsAddressed = {true},
+                               AddressedMessage = '{model.Message}',
+                               AddressedById = '{stagedByUserId}'
+                               Where Id = {model.TicketId};";
+                result = await connection.ExecuteAsync(query, new { model});
             }
-            return ticket;
+
+            return result > 0;
         }
 
         public async Task<int> ReportEntity(ReportEntity reportEntity)
@@ -80,26 +103,6 @@ namespace DataAccessLayer.MySqlRepos
                     reportEntity);
             }
             return reportEntity.Id;
-        }
-
-        public async Task<ReportEntity> AddFilesToReportEntity(ReportEntity reportEntity)
-        {
-            using (var connection = new MySqlConnection(_mysqlConnectionString))
-            {
-                foreach (var file in reportEntity.ReportFiles)
-                {
-                    file.Id = await connection.ExecuteAsync(string.Concat(
-                        "INSERT INTO juniro.ticket_files(",
-                        "ReportEntityId,",
-                        "Url)",
-                        " Values(",
-                        $"@{nameof(file.ReportEntityId)}, ",
-                        $"@{nameof(file.Url)} ",
-                        ")",
-                        "; SELECT LAST_INSERT_ID();"), file);
-                }
-            }
-            return reportEntity;
         }
     }
 }

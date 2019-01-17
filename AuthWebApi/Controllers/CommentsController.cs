@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using AuthWebApi.Authorize;
 using AuthWebApi.IMySqlRepos;
 using AuthWebApi.IUploadHelpers;
+using DataAccessLayer.IMySqlRepos;
 using DataModelLayer.Models.Comments;
 using DataModelLayer.ViewModels.Posts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using LikeCommentViewModel = DataModelLayer.Models.Comments.LikeCommentViewModel;
 
 namespace AuthWebApi.Controllers
 {
@@ -25,6 +27,7 @@ namespace AuthWebApi.Controllers
         private readonly IAuthorizationHelper _authHelper;
         private readonly ICommentFilesUploader _uploadHelper;
 
+        // ReSharper disable once TooManyDependencies
         public CommentsController(
             IHttpContextAccessor httpContextAccessor,
             ICommentRepository commentsRepository,
@@ -66,13 +69,6 @@ namespace AuthWebApi.Controllers
         }
 
         [HttpPost]
-        [Route("LikeComment")]
-        public async Task<IActionResult> LikeComment([FromBody] LikeCommentViewModel model)
-        {
-            return Ok();
-        }
-
-        [HttpPost]
         [Route("DeleteComment")]
         public async Task<IActionResult> DeleteComment([FromBody] DeleteComment model)
         {
@@ -107,6 +103,26 @@ namespace AuthWebApi.Controllers
         }
 
         [HttpPost]
+        [Route("LikeComment")]
+        public async Task<IActionResult> LikeComment([FromBody]LikeCommentViewModel viewModel)
+        {
+            var commentLike = new CommentLike   
+            {
+                // ReSharper disable once TooManyChainedReferences
+                UserId = _caller.Claims.Single(claim => claim.Type == "id").ToString().Remove(0, 4),
+                CommentId = viewModel.PostId,
+                LikeTime = DateTime.Now,
+                LikeCount = viewModel.Value
+            };
+            var result = await _commentRepository.LikeComment(commentLike);
+
+            return new OkObjectResult(new
+            {
+                result
+            });
+        }
+
+        [HttpPost]
         [Route("UpdateComment")]
         public async Task<IActionResult> UpdateComment([FromForm] UpdateCommentViewModel model)
         {
@@ -121,8 +137,11 @@ namespace AuthWebApi.Controllers
                     });
             var updateCommentObj = new UpdateComment(model.Id, model.Comment, callerId);
             var updatedComment = await _commentRepository.UpdateComment(updateCommentObj);
-            _uploadHelper.DeleteCommentFiles(updatedComment.Files);
-            updatedComment.Files = await _uploadHelper.UploadFiles(model.Files, model.Id);
+            if (updatedComment.Files != null && updatedComment.Files.Any())
+            {
+                _uploadHelper.DeleteCommentFiles(updatedComment.Files);
+                updatedComment.Files = await _uploadHelper.UploadFiles(model.Files, model.Id);
+            }
             await _commentRepository.UpdateCommentImages(updatedComment.Files, updatedComment.Id);
             return new OkObjectResult(new
             {

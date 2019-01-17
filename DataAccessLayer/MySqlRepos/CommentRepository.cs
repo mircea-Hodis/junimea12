@@ -2,8 +2,10 @@
 using System.Threading.Tasks;
 using AuthWebApi.IMySqlRepos;
 using Dapper;
+using DataAccessLayer.IMySqlRepos;
 using DataModelLayer.Models.Comments;
 using DataModelLayer.Models.Entities;
+using DataModelLayer.Models.Posts;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 
@@ -53,13 +55,13 @@ namespace DataAccessLayer.MySqlRepos
             {
                 var affectedRows = await connection.ExecuteAsync(query, new { updateComment });
                 if (affectedRows > 0)
-                    result = await GetSingleComment(updateComment.Id, connection);
+                    result = await GetSingleComment(updateComment.Id, connection, updateComment.UserId);
             }
 
             return result;
         }
 
-        private async Task<Comment> GetSingleComment(long commentId, MySqlConnection connection)
+        private async Task<Comment> GetSingleComment(long commentId, MySqlConnection connection, string userId)
         {
             var query = $@"SELECT
                             comments.Id,
@@ -68,6 +70,7 @@ namespace DataAccessLayer.MySqlRepos
                             comments.PostId, 
                             comments.UserId,
                             comments.CreateDate,
+                            comments.Likes,
                             AppUser.FirstName,
                             AppUser.LastName,
                             AppUser.FacebookId
@@ -77,8 +80,20 @@ namespace DataAccessLayer.MySqlRepos
                         WHERE comments.Id = @commentId";
 
             var comment = await connection.QueryFirstOrDefaultAsync<Comment>(query, new {commentId});
+            comment.CurrentUserLikeStatus = await GetCurrentUserLikeStatus(userId, comment.Id, connection);
             comment.Files = await GetCommentFiles(comment.Id, connection);
             return comment;
+        }
+
+        private async Task<int> GetCurrentUserLikeStatus(string userId, long commentId, MySqlConnection connection)
+        {
+            return await connection.QuerySingleOrDefaultAsync<int>(
+                $@"SELECT 
+                    LikeCount
+                    FROM juniro.CommentLikes
+                    WHERE UserId = {nameof(userId)} 
+                    AND CommentId = {nameof(commentId)}",
+                new { userId, commentId });
         }
 
         private async Task<List<CommentFiles>> GetCommentFiles(long commentId, MySqlConnection connection)
@@ -191,7 +206,58 @@ namespace DataAccessLayer.MySqlRepos
             return comment;
         }
 
-     
-   
+        public async Task<CommentLike> LikeComment(CommentLike like)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+
+                var likeStatus = await connection.QuerySingleOrDefaultAsync<LikeStatus>(
+                                     $@"SELECT 
+                                     LikeId,
+                                     LikeCount
+                                     FROM juniro.commentLikes
+                                     WHERE UserId = {nameof(like.UserId)} 
+                                    AND CommentId = {nameof(like.CommentId)}",
+                                     new { like }) ?? new LikeStatus();
+
+                if (likeStatus.LikeCount != like.LikeCount)
+                {
+                    var incrementValue = GetLikeIncrementalValue(like.LikeCount, likeStatus.LikeCount);
+                    like.CommentLikeCount = await connection.QuerySingleOrDefaultAsync<int>(
+                        $@"INSERT INTO juniro.commentLikes (
+                            LikeId, 
+                            LikeTime, 
+                            CommentId, 
+                            UserId, 
+                            LikeCount) 
+                        values(
+                             @{nameof(like.LikeId)},
+                             @{nameof(like.LikeTime)},
+                             @{nameof(like.CommentId)},
+                             @{nameof(like.UserId)},
+                             @{nameof(like.LikeCount)})
+                        ON DUPLICATE KEY UPDATE LikeCount=VALUES(LikeCount);
+                        UPDATE juniro.comments 
+                           SET juniro.comments.Likes = (juniro.comments.Likes + {incrementValue})
+                        WHERE juniro.comments.Id = @{nameof(like.CommentId)};
+                        SELECT juniro.Comments.Likes FROM juniro.Comments WHERE juniro.comments.Id = @{nameof(like.CommentId)}", like);
+                }
+            }
+            return like;
+        }
+        private int GetLikeIncrementalValue(int likeCount, int likeStatusCount)
+        {
+            var incrementValue = 1;
+            if (likeCount == -1)
+                incrementValue = -1;
+            if (likeStatusCount == -1 && likeCount > 0)
+                incrementValue = 2;
+            if (likeStatusCount == 1 && likeCount < 0)
+                incrementValue = -2;
+
+            return incrementValue;
+        }
+
+
     }
 }

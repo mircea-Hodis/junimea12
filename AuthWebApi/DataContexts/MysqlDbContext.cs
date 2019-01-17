@@ -23,6 +23,8 @@ namespace AuthWebApi.DataContexts
                 .HasIndex(postFile => postFile.PostId);
             modelBuilder.Entity<CommentFiles>()
                 .HasIndex(commentFile => commentFile.CommentId);
+            modelBuilder.Entity<CommentLike>()
+                .HasIndex(commentLike => commentLike.CommentId);
         }
 
         public DbSet<UserCommonData> UserCommonData { get; set; }
@@ -31,9 +33,9 @@ namespace AuthWebApi.DataContexts
         public DbSet<Comment> Comments { get; set; }
         public DbSet<CommentFiles> CommentFiles { get; set; }
         public DbSet<PostLike> PostLikes { get; set; }
+        public DbSet<CommentLike> CommentLikes { get; set; }
         public DbSet<ReportEntity> ReportEntity { get; set; }
         public DbSet<Ticket> ReportTickets { get; set; }
-        public DbSet<TicketFile> TicketFiles { get; set; }
 
         //public DbSet<UserStatus> UsersStatuses { get; set; }
         //public DbSet<AdminProposal> AdminProposals { get; set; }

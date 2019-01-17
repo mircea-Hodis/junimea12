@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using DataAccessLayer.IMySqlRepos;
 using DataAccessLayer.IRepository;
 using DataModelLayer.Models.Comments;
 using DataModelLayer.Models.Entities;
@@ -14,9 +15,9 @@ namespace DataAccessLayer.MySqlRepos
 {
     public class PostRepository : IPostRepository
     {
-        private readonly string _connectionString; 
+        private readonly string _connectionString;
 
-        public PostRepository(IConfiguration configurationService)
+        public PostRepository(IConfiguration configurationService, ICommentRepository commentRepository)
         {
             _connectionString = configurationService.GetConnectionString("MysqlConnection");
         }
@@ -73,7 +74,7 @@ namespace DataAccessLayer.MySqlRepos
                         WHERE PostId=@postId;";
           
             int affectedRows;
-            var toBeDeletedPost = await GetPostById(postId);
+            var toBeDeletedPost = await GetPostById(postId, string.Empty);
             using (var connection = new MySqlConnection(_connectionString))
             {
                 affectedRows = await connection.ExecuteAsync(deletePostQuery, new { postId, callerId });
@@ -162,20 +163,54 @@ namespace DataAccessLayer.MySqlRepos
             {
                 var posts = await connection.QueryAsync<Post>(query, new {userId , startDate});
                 result = posts.AsList();
+                foreach (var post in result)
+                {
+                    post.CurrentUserLikeValue = await GetCurrentUserLikeStatus(userId, post.Id, connection);
+                }
             }
             return await AddPostFilesToPosts(result);
         }
 
-        public async Task<List<Post>> GetList(DateTime startTime, string userId)
+        public async Task<List<Post>> GetListInitial(string userId)
         {
             List<Post> result;
             string query = $@"SELECT 
                             Posts.Id,
                             Posts.CreatedDate,
                             Posts.Description,
-                            Posts.Likes = (
-                                SELECT LikeCount FROM juniro.postlikes AS PostLikes
-                                WHERE PostLikes.UserId = @userId AND Posts.Id = PostLikes.PostId),
+                            Posts.Likes,
+                            Posts.PostTtile,
+                            Posts.UserId,
+                            AppUser.FacebookId,
+                            AppUser.FirstName,
+                            AppUser.LastName
+                            FROM juniro.posts
+                            INNER JOIN 
+                              juniro.usercommondata AS AppUser ON Posts.UserId = AppUser.UserId
+                            ORDER BY CreatedDate
+                            Limit 5";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var posts = await connection.QueryAsync<Post>(query);
+                result = posts.AsList();
+                if(!string.IsNullOrEmpty(userId))
+                    foreach (var post in result)
+                    {
+                        post.CurrentUserLikeValue = await GetCurrentUserLikeStatus(userId, post.Id , connection);
+                    }
+            }
+
+            return await AddPostFilesToPosts(result);
+        }
+
+        public async Task<List<Post>> GetList(DateTime startTime, string userId)
+        {
+            List<Post> result;
+            var query = $@"SELECT 
+                            Posts.Id,
+                            Posts.CreatedDate,
+                            Posts.Description,
+                            Posts.Likes,
                             Posts.PostTtile,
                             Posts.UserId,
                             AppUser.FacebookId,
@@ -185,26 +220,28 @@ namespace DataAccessLayer.MySqlRepos
                             INNER JOIN 
                               juniro.usercommondata AS AppUser ON Posts.UserId = AppUser.UserId
                             WHERE CreatedDate < @startTime
-                            ORDER BY CreatedDate DESC";
+                            ORDER BY CreatedDate";
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var posts = await connection.QueryAsync<Post>(query, new { startTime , userId});
+                var posts = await connection.QueryAsync<Post>(query, new { startTime });
                 result = posts.AsList();
-                
+                if (!string.IsNullOrEmpty(userId))
+                    foreach (var post in result)
+                    {
+                        post.CurrentUserLikeValue = await GetCurrentUserLikeStatus(userId, post.Id, connection);
+                    }
             }
             return await AddPostFilesToPosts(result);
         }
 
-        public async Task<Post> GetPostById(int postId)
+        public async Task<Post> GetPostById(int postId, string userId)
         {
             Post result;
             var query = $@"SELECT
                            Posts.Id,
                            Posts.CreatedDate,
                            Posts.Description,
-                           Posts.Likes = (
-                                SELECT LikeCount FROM juniro.postlikes AS PostLikes
-                                WHERE Posts.Id = PostLikes.PostId),
+                           Posts.Likes,
                            Posts.PostTtile,
                            Posts.UserId, 
                            AppUser.FacebookId,
@@ -216,15 +253,27 @@ namespace DataAccessLayer.MySqlRepos
                           WHERE Posts.Id = @postId";
             using (var connection = new MySqlConnection(_connectionString))
             {
-                result = await connection.QuerySingleAsync<Post>(query, new { postId });
+                result = await connection.QuerySingleOrDefaultAsync<Post>(query, new { postId });
+                if(!string.IsNullOrEmpty(userId) && result != null)
+                    result.CurrentUserLikeValue = await GetCurrentUserLikeStatus(userId, result.Id, connection);
             }
 
             result = await AddPostFilesToPost(result);
 
-            return await AddCommentsToPost(result);
+            return await AddCommentsToPost(result, userId);
         }
 
-        private async Task<Post> AddCommentsToPost(Post post)
+        private async Task<int> GetCurrentUserLikeStatus(string userId, int postId, MySqlConnection connection)
+        {
+
+            return await connection.QuerySingleOrDefaultAsync<int>(
+                $@"SELECT 
+                      LikeCount
+                      FROM juniro.PostLikes
+                   WHERE UserId = '{userId}'AND PostId = {postId}");
+        }
+
+        private async Task<Post> AddCommentsToPost(Post post, string userId)
         {
             var postId = post.Id;
             var query = $@"SELECT
@@ -242,7 +291,7 @@ namespace DataAccessLayer.MySqlRepos
                             juniro.usercommondata as AppUser on comments.UserId = AppUser.UserId
                         WHERE comments.PostId = @postId
                         ORDER BY comments.CreateDate
-                        LIMIT 5 
+                        LIMIT 3 
                         ";
 
             using (var connection = new MySqlConnection(_connectionString))
@@ -257,9 +306,20 @@ namespace DataAccessLayer.MySqlRepos
                 foreach (var comment in post.Comments)
                 {
                     comment.Files = await GetCommentFiles(comment.Id, connection);
+                    comment.CurrentUserLikeStatus =
+                        await GetCurrentUserCommentLikeStatus(userId, comment.Id, connection);
                 }
             }
             return post;
+        }
+
+        private async Task<int> GetCurrentUserCommentLikeStatus(string userId, long commentId, MySqlConnection connection)
+        {
+            return await connection.QuerySingleOrDefaultAsync<int>(
+                $@"SELECT 
+                      LikeCount
+                      FROM juniro.CommentLikes
+                   WHERE UserId = '{userId}'AND CommentId = {commentId}");
         }
 
         public async Task<List<Comment>> GetRemainingComments(int postId, DateTime lastCommentDate)
@@ -353,43 +413,54 @@ namespace DataAccessLayer.MySqlRepos
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                like.PostLikesCount = await connection.QuerySingleOrDefaultAsync<int>(
-                        $@"
-                        DECLARE EXISTS VARCHAR(100) DEFAULT NULL;
-                        SET EXISTS := (SELECT
-                                PostLikes.UserId
-                           FROM juniro.PostLikes 
-                           WHERE 
-                                PostId = @{nameof(like.PostId)} 
-                           AND 
-                                UserId = @{nameof(like.UserId)})
-                         IF (EXISTS IS NOT NULL) THEN
-BEGIN
-                            INSERT INTO juniro.PostLikes(
-                             LikeTime,
-                             PostId,
-                             UserId,
-                             LikeCount)
-                            VALUES (
+
+                var likeStatus = await connection.QuerySingleOrDefaultAsync<LikeStatus>(
+                                     $@"SELECT 
+                                     LikeId,
+                                     LikeCount
+                                     FROM juniro.PostLikes
+                                     WHERE UserId = {nameof(like.UserId)} 
+                                    AND PostId = {nameof(like.PostId)}",
+                                     new {like}) ?? new LikeStatus();
+
+                if (likeStatus.LikeCount != like.LikeCount)
+                {
+                    var incrementValue = GetLikeIncrementalValue(like.LikeCount, likeStatus.LikeCount);
+                    like.LikeId += 1;
+                    like.PostLikesCount = await connection.QuerySingleOrDefaultAsync<int>(
+                        $@"INSERT INTO juniro.postLikes (
+                            LikeId, 
+                            LikeTime, 
+                            PostId, 
+                            UserId, 
+                            LikeCount) 
+                        values(
+                             @{nameof(like.LikeId)},
                              @{nameof(like.LikeTime)},
                              @{nameof(like.PostId)},
                              @{nameof(like.UserId)},
-                             @{nameof(like.LikeCount)}
-                            )
-END
-                         ELSE 
-                         BEGIN
-                            UPDATE juniro.PostLikes
-                                SET PostLikes.LikeTime = @{nameof(like.LikeTime)},
-                                    LikeCount = @{nameof(like.LikeCount)}
-                            WHERE juniro.PostLikes.PostId = @{nameof(like.PostId)}
-                         END
+                             @{nameof(like.LikeCount)})
+                        ON DUPLICATE KEY UPDATE LikeCount=VALUES(LikeCount);
                         UPDATE juniro.Posts 
-                           SET juniro.Posts.Likes = juniro.Posts.Likes + @{nameof(like.LikeCount)}
+                           SET juniro.Posts.Likes = (juniro.Posts.Likes + {incrementValue})
                         WHERE juniro.Posts.Id = @{nameof(like.PostId)};
                         SELECT juniro.Posts.Likes FROM juniro.Posts WHERE juniro.Posts.Id = @{nameof(like.PostId)}", like);
+                }
             }
             return like;
+        }
+
+        private int GetLikeIncrementalValue(int likeCount, int likeStatusCount)
+        {
+            var incrementValue = 1;
+            if (likeCount == -1)
+                incrementValue = -1;
+            if (likeStatusCount == -1 && likeCount > 0)
+                incrementValue = 2;
+            if (likeStatusCount == 1 && likeCount < 0)
+                incrementValue = -2;
+
+            return incrementValue;
         }
     }
 }

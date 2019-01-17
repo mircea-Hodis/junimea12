@@ -30,7 +30,7 @@ namespace AuthWebApi.Controllers
 
         [Route("AddTicket")]
         [HttpPost]
-        public async Task<IActionResult> AddTicket([FromForm]TicketsViewModel ticketViewModel)
+        public async Task<IActionResult> AddTicket([FromBody]TicketsViewModel ticketViewModel)
         {
             var callerId = GetCallerId();
             if (string.IsNullOrEmpty(callerId))
@@ -41,17 +41,12 @@ namespace AuthWebApi.Controllers
             var result = await _ticketsRepository.CreateTicket(
                 MapTicketViewModelIntoDataObject(ticketViewModel, callerId), 
                 callerId);
-            if (result > 0 && ticketViewModel.TicketFiles.Any())
-            {
-                
-            }
 
             return new OkObjectResult(new
             {
-                Message = "User banned succesfully",
+                Message = "Report added1",
                 result
             });
-
         }
 
         private Ticket MapTicketViewModelIntoDataObject(TicketsViewModel viewModel, string callerId)
@@ -60,7 +55,10 @@ namespace AuthWebApi.Controllers
             {
                 TicketIssuerUserId = callerId,
                 Message = viewModel.Message,
-                CreatedDate = DateTime.Now
+                IsPending = true,
+                CreatedDate = DateTime.Now,
+                AddressedMessage = string.Empty,
+                AddressedById = string.Empty
             };
         }
 

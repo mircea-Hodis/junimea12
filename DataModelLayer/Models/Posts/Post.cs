@@ -34,6 +34,8 @@ namespace DataModelLayer.Models.Posts
         public List<Comment> Comments { get; set; }
         [NotMapped]
         public bool AreStillCommentsToGet { get; set; }
+        [NotMapped]
+        public int CurrentUserLikeValue { get; set; }
     }
 
     public class UpdatePostViewModel
@@ -93,6 +95,11 @@ namespace DataModelLayer.Models.Posts
         public int LikeCount { get; set; }
         [NotMapped]
         public int PostLikesCount { get; set; }
+    }
 
+    public class LikeStatus
+    {
+        public int LikeId { get; set; }
+        public int LikeCount { get; set; }
     }
 }
