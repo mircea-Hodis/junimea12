@@ -220,9 +220,24 @@ namespace DataAccessLayer.MySqlRepos
                                     AND CommentId = {nameof(like.CommentId)}",
                                      new { like }) ?? new LikeStatus();
 
-                if (likeStatus.LikeCount != like.LikeCount)
+                var areBothPositve = likeStatus.LikeCount > 0 && like.LikeCount > 0;
+                var areBothNegative = likeStatus.LikeCount < 0 && like.LikeCount < 0;
+                var areDifferent = likeStatus.LikeCount != like.LikeCount;
+                if (areDifferent && !areBothNegative && !areBothPositve)
                 {
                     var incrementValue = GetLikeIncrementalValue(like.LikeCount, likeStatus.LikeCount);
+                    like.LikeCount = incrementValue;
+                    if (incrementValue == 1 && likeStatus.LikeCount < 0)
+                        like.LikeCount = 0;
+                    if (incrementValue == -1 && likeStatus.LikeCount > 0)
+                        like.LikeCount = 0;
+                    if (likeStatus.LikeId > 0)
+                        like.LikeId = likeStatus.LikeId;
+                    if (incrementValue < -1)
+                        like.LikeCount = -1;
+                    if (incrementValue > 1)
+                        like.LikeCount = 1;
+
                     like.CommentLikeCount = await connection.QuerySingleOrDefaultAsync<int>(
                         $@"INSERT INTO juniro.commentLikes (
                             LikeId, 
@@ -245,16 +260,20 @@ namespace DataAccessLayer.MySqlRepos
             }
             return like;
         }
+
         private int GetLikeIncrementalValue(int likeCount, int likeStatusCount)
         {
             var incrementValue = 1;
-            if (likeCount == -1)
+            if (likeCount < 0)
                 incrementValue = -1;
+            if (likeCount > 0)
+                incrementValue = 1;
             if (likeStatusCount == -1 && likeCount > 0)
                 incrementValue = 2;
             if (likeStatusCount == 1 && likeCount < 0)
                 incrementValue = -2;
-
+            if (likeCount == 0 && likeStatusCount > 0)
+                incrementValue = -1;
             return incrementValue;
         }
 
