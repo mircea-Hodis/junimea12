@@ -45,7 +45,6 @@ namespace AuthWebApi.Controllers
             var userIdentity = _mapper.Map<AppUser>(model);
 
             var result = await _userManager.CreateAsync(userIdentity, model.Password);
-
             if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
 
             await _appDbContext.Customers.AddAsync(new Customer { IdentityId = userIdentity.Id, Location = model.Location });
@@ -57,6 +56,15 @@ namespace AuthWebApi.Controllers
 
             return new OkObjectResult("Account created");
         }
+
+        //[Route("DeleteAccount")]
+        //[HttpPost]
+        //public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountViewModel model)
+        //{
+        //    _userManager.GetUserAsync();
+        //    _userManager.DeleteAsync();
+        //}
+
 
         private UserCommonData CreateUserCommonDataObject(AppUser userIdentity)
         {

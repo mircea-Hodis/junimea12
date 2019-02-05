@@ -33,11 +33,7 @@ namespace AuthWebApi.Controllers
         [Route("GetPosts")]
         public async Task<IActionResult> GetPosts([FromBody]GetRecentRequest request)
         {
-            var callerId = string.Empty;
-            if(_caller.Identity.IsAuthenticated)
-                callerId = _caller.Claims.Single(claim =>
-                    string.Equals(claim.Type, "id", StringComparison.OrdinalIgnoreCase))
-                    .ToString().Remove(0, 4);
+            var callerId = GetCallerId();
 
             var startDate = DateTime.Parse(request.StartDate);
             var result = await _postRepository.GetList(startDate, callerId);
@@ -52,11 +48,8 @@ namespace AuthWebApi.Controllers
         [Route("GetPostById")]
         public async Task<IActionResult> GetPostById([FromBody]GetPostRequest request)
         {
-            var callerId = string.Empty;
-            if (_caller.Identity.IsAuthenticated)
-                callerId = _caller.Claims.Single(claim =>
-                        string.Equals(claim.Type, "id", StringComparison.OrdinalIgnoreCase))
-                    .ToString().Remove(0, 4);
+            var callerId = GetCallerId();
+
             var result = await _postRepository.GetPostById(request.PostId, callerId);
             return new OkObjectResult(new
             {
@@ -69,11 +62,7 @@ namespace AuthWebApi.Controllers
         [Route("GetPostBatchInitial")]
         public async Task<IActionResult> GetPostBatchInitial()
         {
-            var callerId = string.Empty;
-            if (_caller.Identity.IsAuthenticated)
-                callerId = _caller.Claims.Single(claim =>
-                        string.Equals(claim.Type, "id", StringComparison.OrdinalIgnoreCase))
-                    .ToString().Remove(0, 4);
+            var callerId = GetCallerId();
 
             var result = await _postRepository.GetListInitial(callerId);
             return new OkObjectResult(new
@@ -105,6 +94,43 @@ namespace AuthWebApi.Controllers
                 Message = "Whuhu",
                 result
             });
+        }
+
+        [HttpPost]
+        [Route("GetNext")]
+        public async Task<IActionResult> GetNextPost([FromBody]NextPreviousPost request)
+        {
+            var callerId = GetCallerId();
+            var result = await _postRepository.GetNextPost(request.CurrentId, callerId);
+            return new OkObjectResult(new
+            {
+                Message = "Whuhu",
+                result
+            });
+        }
+
+        [HttpPost]
+        [Route("GetPrevious")]
+        public async Task<IActionResult> GetPreviousPost([FromBody]NextPreviousPost request)
+        {
+            var callerId = GetCallerId();
+            var result = await _postRepository.GetPrevious(request.CurrentId, callerId);
+            return new OkObjectResult(new
+            {
+                Message = "Whuhu",
+                result
+            });
+        }
+
+        private string GetCallerId()
+        {
+            var callerId = string.Empty;
+            if (_caller.Identity.IsAuthenticated)
+                callerId = _caller.Claims.Single(claim =>
+                        string.Equals(claim.Type, "id", StringComparison.OrdinalIgnoreCase))
+                    .ToString().Remove(0, 4);
+
+            return callerId;
         }
     }
 }

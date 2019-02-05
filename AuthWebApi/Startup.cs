@@ -165,6 +165,12 @@ namespace AuthWebApi
                         policy.RequireClaim(
                         Constants.Strings.JwtClaimIdentifiers.Rol,
                         Constants.Strings.JwtClaims.Admin));
+                options.AddPolicy(
+                    "ApiSuperAdmin",
+                    policy =>
+                        policy.RequireClaim(
+                            Constants.Strings.JwtClaimIdentifiers.Rol,
+                            Constants.Strings.JwtClaims.SuperAdmin));
             });
         }
 

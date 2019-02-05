@@ -13,6 +13,7 @@
             {
                 public const string ApiAccess = "api_access";
                 public const string Admin = "api_control";
+                public const string SuperAdmin = "full_control";
             }
         }
     }

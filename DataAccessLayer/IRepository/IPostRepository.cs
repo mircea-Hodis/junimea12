@@ -17,5 +17,7 @@ namespace DataAccessLayer.IRepository
         Task<int> UpdatePostAsync(UpdatePost updatePost);
         Task<List<Comment>> GetRemainingComments(int postId, DateTime lastCommentDate);
         Task<List<Post>> GetListInitial(string userId);
+        Task<Post> GetNextPost(int currentId, string userId);
+        Task<Post> GetPrevious(int currentId, string userId);
     }
 }

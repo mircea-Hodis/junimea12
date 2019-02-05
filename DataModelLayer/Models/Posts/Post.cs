@@ -102,4 +102,10 @@ namespace DataModelLayer.Models.Posts
         public int LikeId { get; set; }
         public int LikeCount { get; set; }
     }
+
+    public class NextPreviousPost
+    {
+        public int CurrentId { get; set; }
+    }
+
 }

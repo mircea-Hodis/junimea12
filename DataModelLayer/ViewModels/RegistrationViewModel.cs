@@ -8,4 +8,10 @@
         public string LastName { get; set; }
         public string Location { get; set; }
     }
+
+    public class DeleteAccountViewModel
+    {
+        public string UserId { get; set; }
+    }
+
 }

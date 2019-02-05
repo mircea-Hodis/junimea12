@@ -479,5 +479,66 @@ namespace DataAccessLayer.MySqlRepos
                 incrementValue = -1;
             return incrementValue;
         }
+
+        public async Task<Post> GetNextPost(int currentId, string userId)
+        {
+            Post result;
+            var query = $@"SELECT
+                           Posts.Id,
+                           Posts.CreatedDate,
+                           Posts.Description,
+                           Posts.Likes,
+                           Posts.PostTtile,
+                           Posts.UserId, 
+                           AppUser.FacebookId,
+                           AppUser.FirstName,
+                           AppUser.LastName
+                          FROM juniro.Posts AS Posts
+                              INNER JOIN 
+                              juniro.usercommondata AS AppUser ON Posts.UserId = AppUser.UserId 
+                         WHERE Posts.Id > @currentId";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                result = await connection.QueryFirstOrDefaultAsync<Post>(query, new { currentId });
+                if (!string.IsNullOrEmpty(userId) && result != null)
+                    result.CurrentUserLikeValue = await GetCurrentUserLikeStatus(userId, result.Id, connection);
+            }
+
+            result = await AddPostFilesToPost(result);
+
+            return await AddCommentsToPost(result, userId);
+        }
+
+        public async Task<Post> GetPrevious(int currentId, string userId)
+        {
+            Post result;
+            var query = $@"SELECT
+                           Posts.Id,
+                           Posts.CreatedDate,
+                           Posts.Description,
+                           Posts.Likes,
+                           Posts.PostTtile,
+                           Posts.UserId, 
+                           AppUser.FacebookId,
+                           AppUser.FirstName,
+                           AppUser.LastName
+                          FROM juniro.Posts AS Posts
+                              INNER JOIN 
+                              juniro.usercommondata AS AppUser ON Posts.UserId = AppUser.UserId 
+                          WHERE Posts.Id < @currentId ORDER BY Posts.Id DESC LIMIT 1";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var queryResult = await connection.QueryAsync<Post>(query, new { currentId });
+                result = queryResult.FirstOrDefault();
+                if (result == null)
+                    return null;
+                if (!string.IsNullOrEmpty(userId) && result != null)
+                    result.CurrentUserLikeValue = await GetCurrentUserLikeStatus(userId, result.Id, connection);
+            }
+
+            result = await AddPostFilesToPost(result);
+
+            return await AddCommentsToPost(result, userId);
+        }
     }
 }
