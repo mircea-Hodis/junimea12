@@ -1,0 +1,16 @@
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Release\netcoreapp2.0.7\DataAccessLayer.deps.json
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Release\netcoreapp2.0.7\DataAccessLayer.runtimeconfig.json
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Release\netcoreapp2.0.7\DataAccessLayer.runtimeconfig.dev.json
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Release\netcoreapp2.0.7\DataAccessLayer.dll
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Release\netcoreapp2.0.7\DataAccessLayer.pdb
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Release\netcoreapp2.0.7\DataModelLayer.dll
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Release\netcoreapp2.0.7\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Release\netcoreapp2.0.7\DataModelLayer.pdb
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\bin\Release\netcoreapp2.0.7\Microsoft.AspNetCore.Identity.EntityFrameworkCore.xml
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Release\netcoreapp2.0.7\DataAccessLayer.csprojAssemblyReference.cache
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Release\netcoreapp2.0.7\DataAccessLayer.csproj.CoreCompileInputs.cache
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Release\netcoreapp2.0.7\DataAccessLayer.AssemblyInfoInputs.cache
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Release\netcoreapp2.0.7\DataAccessLayer.AssemblyInfo.cs
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Release\netcoreapp2.0.7\DataAccessLayer.csproj.CopyComplete
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Release\netcoreapp2.0.7\DataAccessLayer.dll
+C:\Users\User\source\repos\juni\junimea\DataAccessLayer\obj\Release\netcoreapp2.0.7\DataAccessLayer.pdb

@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
-using AuthWebApi.IMySqlRepos;
 using Dapper;
+using DataAccessLayer.IMySqlRepos;
 using DataModelLayer.Models.Entities;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 
-namespace AuthWebApi.MySqlRepos
+namespace DataAccessLayer.MySqlRepos
 {
     public class UserCommonDataRepository : IUserCommonDataRepository
     {
@@ -37,6 +37,18 @@ namespace AuthWebApi.MySqlRepos
             using (var connection = new MySqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(query, data);
+            }
+        }
+
+        public async Task DeleteUserCommonData(string userId)
+        {
+            var query = $@"
+                        DELETE FROM juniro.usercommondata
+                        WHERE UserId = @userId;";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(query, new {userId});
             }
         }
     }

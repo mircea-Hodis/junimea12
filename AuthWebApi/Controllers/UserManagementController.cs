@@ -2,11 +2,15 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using AuthWebApi.IRepository;
+using AuthWebApi.DataContexts;
+using DataAccessLayer.IMySqlRepos;
 using DataAccessLayer.IRepository;
+using DataModelLayer.Models.Entities;
 using DataModelLayer.ViewModels.UserManagement;
+using DataModelLayer.ViewModels.UserProfile;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthWebApi.Controllers
@@ -19,13 +23,22 @@ namespace AuthWebApi.Controllers
     {
         private readonly IUserManagementRepository _userManagementRepository;
         private readonly ClaimsPrincipal _caller;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly MsSqlUserDbContext _appDbContext;
+        private readonly IUserCommonDataRepository _userCommonDataRepository;
 
         public UserManagementController(
+            UserManager<AppUser> userManager,
             IUserManagementRepository userManagementRepository, 
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            MsSqlUserDbContext appDbContext, 
+            IUserCommonDataRepository userCommonDataRepository)
         {
+            _userManager = userManager;
             _userManagementRepository = userManagementRepository;
             _caller = httpContextAccessor.HttpContext.User;
+            _appDbContext = appDbContext;
+            _userCommonDataRepository = userCommonDataRepository;
         }
 
         [Route("BanUser")]
@@ -93,13 +106,38 @@ namespace AuthWebApi.Controllers
             });
         }
 
+        [Route("DeleteAccount")]
+        [HttpPost]
+        public async Task<IActionResult> DeleteAccount([FromBody]DeleteUser model)
+        {
+            var userToVerify = await _userManager.FindByNameAsync(model.Email);
+
+            if (userToVerify == null)
+                return BadRequest();
+
+            var customerToRemove = _appDbContext.Customers
+                .FirstOrDefault(customer => customer.IdentityId == userToVerify.Id);
+
+            if (customerToRemove == null)
+                return BadRequest();
+
+            _appDbContext.Customers.Remove(customerToRemove);
+
+            await _userManager.DeleteAsync(userToVerify);
+            await _userCommonDataRepository.DeleteUserCommonData(userToVerify.Id);
+
+            return new OkObjectResult("Account Deleted");
+        }
+
         private string GetCallerId()
         {
+            var callerId = string.Empty;
             if (_caller.Identity.IsAuthenticated)
-                return _caller.Claims.Single(claim =>
+                callerId = _caller.Claims.Single(claim =>
                         string.Equals(claim.Type, "id", StringComparison.OrdinalIgnoreCase))
                     .ToString().Remove(0, 4);
-            return string.Empty;
+
+            return callerId;
         }
     }
 }

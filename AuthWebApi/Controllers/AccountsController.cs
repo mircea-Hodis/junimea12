@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using AuthWebApi.DataContexts;
 using AuthWebApi.Helpers;
-using AuthWebApi.IMySqlRepos;
 using AutoMapper;
+using DataAccessLayer.IMySqlRepos;
 using DataModelLayer.Models.Entities;
 using DataModelLayer.ViewModels;
 using Microsoft.AspNetCore.Identity;

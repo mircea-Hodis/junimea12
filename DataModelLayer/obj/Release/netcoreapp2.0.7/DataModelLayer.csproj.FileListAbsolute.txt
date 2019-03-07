@@ -1,0 +1,12 @@
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\bin\Release\netcoreapp2.0.7\DataModelLayer.deps.json
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\bin\Release\netcoreapp2.0.7\DataModelLayer.dll
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\bin\Release\netcoreapp2.0.7\DataModelLayer.pdb
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\bin\Release\netcoreapp2.0.7\Microsoft.Extensions.Identity.Stores.dll
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\bin\Release\netcoreapp2.0.7\Microsoft.Extensions.Identity.Stores.xml
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\obj\Release\netcoreapp2.0.7\DataModelLayer.csprojAssemblyReference.cache
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\obj\Release\netcoreapp2.0.7\DataModelLayer.csproj.CoreCompileInputs.cache
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\obj\Release\netcoreapp2.0.7\DataModelLayer.AssemblyInfoInputs.cache
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\obj\Release\netcoreapp2.0.7\DataModelLayer.AssemblyInfo.cs
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\obj\Release\netcoreapp2.0.7\DataModelLayer.csproj.CopyComplete
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\obj\Release\netcoreapp2.0.7\DataModelLayer.dll
+C:\Users\User\source\repos\juni\junimea\DataModelLayer\obj\Release\netcoreapp2.0.7\DataModelLayer.pdb

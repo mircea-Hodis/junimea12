@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using AuthWebApi.IMySqlRepos;
 using Dapper;
 using DataAccessLayer.IMySqlRepos;
 using DataModelLayer.Models.Comments;

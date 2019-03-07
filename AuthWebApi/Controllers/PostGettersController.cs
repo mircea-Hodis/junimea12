@@ -18,7 +18,6 @@ namespace AuthWebApi.Controllers
     {
         private readonly IPostRepository _postRepository;
         private readonly ClaimsPrincipal _caller;
-        private readonly ICommentRepository _commentRepository;
         public PostGettersController(
             IPostRepository postRepository,
             IHttpContextAccessor httpContextAccessor,
@@ -26,7 +25,6 @@ namespace AuthWebApi.Controllers
         {
             _postRepository = postRepository;
             _caller = httpContextAccessor.HttpContext.User;
-            _commentRepository = commentRepository;
         }
 
         [HttpPost]

@@ -17,4 +17,9 @@ namespace DataModelLayer.ViewModels.UserProfile
         public string UserId { get; set; }
         public DateTime StartDate { get; set; }
     }
+
+    public class DeleteUser
+    {
+        public string Email { get; set; }
+    }
 }

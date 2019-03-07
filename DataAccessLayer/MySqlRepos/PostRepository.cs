@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using DataAccessLayer.IMySqlRepos;
 using DataAccessLayer.IRepository;
 using DataModelLayer.Models.Comments;
 using DataModelLayer.Models.Entities;
@@ -17,11 +17,11 @@ namespace DataAccessLayer.MySqlRepos
     {
         private readonly string _connectionString;
 
-        public PostRepository(IConfiguration configurationService, ICommentRepository commentRepository)
+        public PostRepository(IConfiguration configurationService)
         {
             _connectionString = configurationService.GetConnectionString("MysqlConnection");
         }
-
+         
         public async Task<Post> CreateAsync(Post post)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -540,5 +540,6 @@ namespace DataAccessLayer.MySqlRepos
 
             return await AddCommentsToPost(result, userId);
         }
+        
     }
 }

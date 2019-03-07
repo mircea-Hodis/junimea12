@@ -153,24 +153,26 @@ namespace AuthWebApi
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(
-                    "ApiUser", 
-                    policy => 
-                        policy.RequireClaim(
-                            Constants.Strings.JwtClaimIdentifiers.Rol, 
-                            Constants.Strings.JwtClaims.ApiAccess));
-
-                options.AddPolicy(
-                    "ApiAdmin",
-                    policy => 
-                        policy.RequireClaim(
-                        Constants.Strings.JwtClaimIdentifiers.Rol,
-                        Constants.Strings.JwtClaims.Admin));
-                options.AddPolicy(
-                    "ApiSuperAdmin",
+                    "ApiUser",
                     policy =>
                         policy.RequireClaim(
                             Constants.Strings.JwtClaimIdentifiers.Rol,
-                            Constants.Strings.JwtClaims.SuperAdmin));
+                            Constants.Strings.JwtClaims.ApiAccess));
+                options.AddPolicy(
+                    "ApiAdmin",
+                    policy =>
+                        policy.RequireClaim(
+                            Constants.Strings.JwtClaimIdentifiers.Rol,
+                            Constants.Strings.JwtClaims.Admin,
+                            Constants.Strings.JwtClaims.SuperAdmin,
+                            Constants.Strings.JwtClaims.ApiAccess));
+                options.AddPolicy(
+                    "ApiSuperAdmin",
+                    policy =>
+                    {
+                        policy.RequireClaim(
+                            Constants.Strings.JwtClaimIdentifiers.Rol);
+                    });
             });
         }
 
