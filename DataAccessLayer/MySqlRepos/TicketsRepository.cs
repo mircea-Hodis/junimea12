@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
 using DataAccessLayer.IMySqlRepos;
 using DataModelLayer.Models.Entities;
 using DataModelLayer.Models.Tikets;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using MySql.Data.MySqlClient;
 
 namespace DataAccessLayer.MySqlRepos
@@ -79,30 +79,124 @@ namespace DataAccessLayer.MySqlRepos
             return result > 0;
         }
 
-        public async Task<int> ReportEntity(ReportEntity reportEntity)
+        public async Task<int> ReportPost(PostReport reportEntity)
         {
             using (var connection = new MySqlConnection(_mysqlConnectionString))
             {
+                var queryResult = await connection.QueryAsync<CommentReport>(@"SELECT * FROM juniro.commentreports 
+                                                                        where ReportedByUserId = @userId");
+
                 reportEntity.Id = await connection.QuerySingleAsync<int>(
-                    $@"INSERT INTO juniro.Posts(
-                        CreatedDate,
-                        IsAddresed, 
-                        AddresedMessage,
-                        Message,
-                        TicketIssuerUserId,
+                    $@"INSERT INTO juniro.PostReports(
                         EntityId,
-                        ReportedEntityId)
+                        Message,
+                        ReportedByUserId,
+                        CreatedDate)
                     VALUES (
-                        @{nameof(reportEntity.CreatedDate)},
-                        @{nameof(reportEntity.IsAddressed)},
-                        @{nameof(reportEntity.AddressedMessage)},
+                        @{nameof(reportEntity.EntityId)},
                         @{nameof(reportEntity.Message)},
-                        @{nameof(reportEntity.ReportedByUserId)});
-                        @{nameof(reportEntity.ReportedEntityId)});
+                        @{nameof(reportEntity.AddressedMessage)},
+                        @{nameof(reportEntity.CreatedDate)});
                     SELECT LAST_INSERT_ID();",
                     reportEntity);
             }
             return reportEntity.Id;
+        }
+
+        public async Task<int> AddressPostReport(PostReport postReport)
+        {
+            var query = $@"UPDATE juniro.PostReports
+                           SET 
+                               AddressedById = '{postReport.AddressedById}',
+                               AddressedMessage = '{postReport.AddressedMessage}',
+                               AddresDateTime = '{postReport.AddresDateTime}'
+                           WHERE Id = {postReport.Id}";
+
+            using (var connection = new MySqlConnection(_mysqlConnectionString))
+            {
+                return await connection.ExecuteAsync(query, new { postReport });
+            }
+        }
+
+        public async Task<int> ReportComment(CommentReport reportEntity)
+        {
+            using (var connection = new MySqlConnection(_mysqlConnectionString))
+            {
+                reportEntity.Id = await connection.QuerySingleAsync<int>(
+                    $@"INSERT INTO juniro.CommentReports(
+                        EntityId,
+                        Message,
+                        ReportedByUserId,
+                        CreatedDate)
+                    VALUES (
+                        @{nameof(reportEntity.EntityId)},
+                        @{nameof(reportEntity.Message)},
+                        @{nameof(reportEntity.AddressedMessage)},
+                        @{nameof(reportEntity.CreatedDate)});
+                    SELECT LAST_INSERT_ID();",
+                    reportEntity);
+            }
+            return reportEntity.Id;
+        }
+
+        public async Task<int> AddressCommentReport(CommentReport postReport)
+        {
+            var query = $@"UPDATE juniro.CommentReports
+                           SET 
+                               AddressedById = '{postReport.AddressedById}',
+                               AddressedMessage = '{postReport.AddressedMessage}',
+                               AddresDateTime = '{postReport.AddresDateTime}'
+                           WHERE Id = {postReport.Id} AND PostId = '{postReport.PostId}";
+
+            using (var connection = new MySqlConnection(_mysqlConnectionString))
+            {
+                return await connection.ExecuteAsync(query, new { postReport });
+            }
+        }
+
+        public async Task<List<Ticket>> GetUserTicket(string userId)
+        {
+            var result = new List<Ticket>();
+            using (var connection = new MySqlConnection(_mysqlConnectionString))
+            {
+                var queryResult = await connection.QueryAsync<Ticket>(@"SELECT * FROM juniro.ticket 
+                                                                        where TicketIssuerUserId = @userId", new { userId });
+                if (queryResult == null)
+                   return result;
+                result = queryResult.AsList();
+            }
+
+            return result;
+        }
+
+        public async Task<List<CommentReport>> GetUserCommentReport(string userId)
+        {
+            var result = new List<CommentReport>();
+            using (var connection = new MySqlConnection(_mysqlConnectionString))
+            {
+                var queryResult = await connection.QueryAsync<CommentReport>(@"SELECT * FROM juniro.commentreports 
+                                                                        where ReportedByUserId = @userId", new { userId });
+                if (queryResult == null)
+                    return result;
+                result = queryResult.AsList();
+            }
+
+            return result;
+        }
+
+        public async Task<List<PostReport>> GetUserPostReport(string userId)
+        {
+            var result = new List<PostReport>();
+            using (var connection = new MySqlConnection(_mysqlConnectionString))
+            {
+                var queryResult = await connection.QueryAsync<PostReport>(@"SELECT * FROM juniro.postreports 
+                                                                        where ReportedByUserId = @userId", new { userId });
+                if (queryResult == null)
+                    return result;
+                result = queryResult.AsList();
+            }
+
+            return result;
         }
     }
 }

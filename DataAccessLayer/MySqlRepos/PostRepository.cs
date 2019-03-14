@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -63,13 +62,13 @@ namespace DataAccessLayer.MySqlRepos
 
         public async Task<DeletePostResponse> DeletePost(int postId, string callerId)
         {
-            var deletePostQuery = $@"
+            var deletePostQuery = @"
                         DELETE FROM juniro.posts
                         WHERE Id=@postId AND UserId = @callerId;";
-            var deletePostFilesQuery = $@" 
+            var deletePostFilesQuery = @" 
                         DELETE FROM juniro.postfiles
                         WHERE Id=@postId;";
-            var deletePostLikes = $@" 
+            var deletePostLikes = @" 
                         DELETE FROM juniro.postLikes
                         WHERE PostId=@postId;";
           

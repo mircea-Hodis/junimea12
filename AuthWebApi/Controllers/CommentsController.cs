@@ -3,7 +3,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AuthWebApi.Authorize;
-using AuthWebApi.IMySqlRepos;
 using AuthWebApi.IUploadHelpers;
 using DataAccessLayer.IMySqlRepos;
 using DataModelLayer.Models.Comments;

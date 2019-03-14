@@ -34,29 +34,46 @@ namespace DataModelLayer.Models.Tikets
         public string Message { get; set; }
     }
 
-    public class ReportEntity
+    [Table("PostReports")]
+    public class PostReport
     {
         [Key]
         public int Id { get; set; }
         public int EntityId { get; set; }
-        public int ReportedEntityId { get; set; }
-        [NotMapped]
-        public ReportedEntityType ReportedEntityType { get; set; }
         public string Message { get; set; }
         public string ReportedByUserId { get; set; }
         public string AddressedMessage { get; set; }
         public string AddressedById { get; set; }
-        public bool IsAddressed { get; set; }
         public DateTime CreatedDate { get; set; }
+        public DateTime AddresDateTime { get; set; }
     }
 
-    public class ReportEntityViewModel
+    [Table("CommentReports")]
+    public class CommentReport
+    {
+        [Key]
+        public int Id { get; set; }
+        public int PostId { get; set; }
+        public int EntityId { get; set; }
+        public string Message { get; set; }
+        public string ReportedByUserId { get; set; }
+        public string AddressedMessage { get; set; }
+        public string AddressedById { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime AddresDateTime { get; set; }
+    }
+    
+    public class PostReportViewModel
     {
         public int EntityId { get; set; }
-        public string IssuerId { get; set; }
-        public int ReportedEntityId { get; set; }
         public string Message { get; set; }
-        public List<IFormFile> TicketFiles { get; set; }
+    }
+
+    public class CommentReportViewModel
+    {
+        public int PostId { get; set; }
+        public int EntityId { get; set; }
+        public string Message { get; set; }
     }
 
     public enum ReportedEntityType

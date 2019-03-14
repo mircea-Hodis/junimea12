@@ -24,9 +24,6 @@ using Microsoft.IdentityModel.Tokens;
 using AuthWebApi.UploadHelpers;
 using AuthWebApi.Authorize;
 using AuthWebApi.DataContexts;
-using AuthWebApi.IMySqlRepos;
-using AuthWebApi.MsSqlRepos;
-using AuthWebApi.MySqlRepos;
 using DataAccessLayer.IMySqlRepos;
 using DataAccessLayer.IRepository;
 using DataAccessLayer.MsSqlRepos;
@@ -108,7 +105,6 @@ namespace AuthWebApi
             services.AddTransient<IRoleCheckRepository, RoleCheckRepository>();
             services.AddTransient<IUserManagementRepository, UserManagementRepository>();
             services.AddTransient<IUserCommonDataRepository, UserCommonDataRepository>();
-            services.AddTransient<IReportPostRepository, ReportPostRepository>();
             services.AddTransient<ITicketsRepository, TicketsRepository>();
             services.AddScoped<RoleManager<IdentityRole>>();
         }

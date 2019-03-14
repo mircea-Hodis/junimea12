@@ -62,14 +62,26 @@ namespace AuthWebApi.Controllers
             };
         }
 
-        private ReportEntity MapTicketViewModelIntoDataObject(ReportEntityViewModel viewModel, string callerId)
+        private PostReport MapTicketViewModelIntoDataObject(PostReportViewModel viewModel, string callerId)
         {
-            return new ReportEntity
+            return new PostReport
             {
                 ReportedByUserId = callerId,
+                EntityId = viewModel.EntityId,
                 Message = viewModel.Message,
                 CreatedDate = DateTime.Now,
-                ReportedEntityId = viewModel.ReportedEntityId
+            };
+        }
+
+        private CommentReport MapTicketViewModelIntoDataObject(CommentReportViewModel viewModel, string callerId)
+        {
+            return new CommentReport
+            {
+                ReportedByUserId = callerId,
+                PostId = viewModel.PostId,
+                EntityId = viewModel.EntityId,
+                Message = viewModel.Message,
+                CreatedDate = DateTime.Now
             };
         }
 

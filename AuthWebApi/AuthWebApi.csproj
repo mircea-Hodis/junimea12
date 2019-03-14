@@ -18,6 +18,7 @@
     <Folder Include="IPostFielsUpload\" />
     <Folder Include="Migrations\" />
     <Folder Include="images\" />
+    <Folder Include="Migrations\MysqlDb\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

@@ -158,10 +158,12 @@ namespace AuthWebApi.Migrations.MysqlDb
                     b.ToTable("PostLikes");
                 });
 
-            modelBuilder.Entity("DataModelLayer.Models.Tikets.ReportEntity", b =>
+            modelBuilder.Entity("DataModelLayer.Models.Tikets.CommentReport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("AddresDateTime");
 
                     b.Property<string>("AddressedById");
 
@@ -171,17 +173,43 @@ namespace AuthWebApi.Migrations.MysqlDb
 
                     b.Property<int>("EntityId");
 
-                    b.Property<bool>("IsAddressed");
+                    b.Property<string>("Message");
+
+                    b.Property<int>("PostId");
+
+                    b.Property<string>("ReportedByUserId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CommentReports");
+                });
+
+            modelBuilder.Entity("DataModelLayer.Models.Tikets.PostReport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("AddresDateTime")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(new DateTime(2019, 3, 14, 20, 13, 27, 809, DateTimeKind.Local));
+
+                    b.Property<string>("AddressedById");
+
+                    b.Property<string>("AddressedMessage");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(new DateTime(2019, 3, 14, 20, 13, 27, 817, DateTimeKind.Local));
+
+                    b.Property<int>("EntityId");
 
                     b.Property<string>("Message");
 
                     b.Property<string>("ReportedByUserId");
 
-                    b.Property<int>("ReportedEntityId");
-
                     b.HasKey("Id");
 
-                    b.ToTable("ReportEntity");
+                    b.ToTable("PostReports");
                 });
 
             modelBuilder.Entity("DataModelLayer.Models.Tikets.Ticket", b =>

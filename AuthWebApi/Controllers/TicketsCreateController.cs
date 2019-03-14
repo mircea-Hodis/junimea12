@@ -4,7 +4,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using DataAccessLayer.IMySqlRepos;
 using DataModelLayer.Models.Tikets;
-using DataModelLayer.ViewModels.UserManagement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -62,30 +61,101 @@ namespace AuthWebApi.Controllers
             };
         }
 
-        private ReportEntity MapTicketViewModelIntoDataObject(ReportEntityViewModel viewModel, string callerId)
+        [Route("ReportPost")]
+        [HttpPost]
+        public async Task<IActionResult> ReportPost(PostReportViewModel viewModel)
         {
-            return new ReportEntity
+            var callerId = GetCallerId();
+            var postReport = MapTicketViewModelIntoDataObject(viewModel, callerId);
+
+            postReport.Id = await _ticketsRepository.ReportPost(postReport);
+
+            return new OkObjectResult(new
+            {
+                Message = "Report added",
+                postReport
+            });
+        }
+
+        [Route("ReportComment")]
+        [HttpPost]
+        public  async Task<IActionResult> ReportComment(CommentReportViewModel viewModel)
+        {
+            var callerId = GetCallerId();
+            var commentReport = MapReportCommentViewModel(viewModel, callerId);
+
+            commentReport.Id = await _ticketsRepository.ReportComment(commentReport);
+
+            return new OkObjectResult(new
+            {
+                Message = "Report added",
+                postReport = commentReport
+            });
+        }
+
+        [Route("GetTickets")]
+        public async Task<IActionResult> GetTickets()
+        {
+            var callerId = GetCallerId();
+
+            var result = await _ticketsRepository.GetUserTicket(callerId);
+
+            return new OkObjectResult(new
+            {
+                Message = result.Count > 0 ? "Your current tickets" : "you have no tickets",
+                postReport = result
+            });
+        }
+
+        [Route("GetCommentReports")]
+        public async Task<IActionResult> GetCommentReports()
+        {
+            var callerId = GetCallerId();
+
+            var result = await _ticketsRepository.GetUserCommentReport(callerId);
+
+            return new OkObjectResult(new
+            {
+                Message = result.Count > 0 ? "Your current reports" : "you have no reports",
+                postReport = result
+            });
+        }
+
+        [Route("GetUserPostReports")]
+        public async Task<IActionResult> GetUserPostReports()
+        {
+            var callerId = GetCallerId();
+
+            var result = await _ticketsRepository.GetUserPostReport(callerId);
+
+            return new OkObjectResult(new
+            {
+                Message = result.Count > 0 ? "Your current reports" : "you have no reports",
+                postReport = result
+            });
+        }
+
+        private PostReport MapTicketViewModelIntoDataObject(PostReportViewModel viewModel, string callerId)
+        {
+            return new PostReport
             {
                 ReportedByUserId = callerId,
                 Message = viewModel.Message,
                 CreatedDate = DateTime.Now,
-                ReportedEntityId = viewModel.ReportedEntityId
             };
         }
 
-        [Route("UnbanUser")]
-        [HttpPost]
-        public async Task<IActionResult> UnBanUser([FromBody]UnbanUserViewModel model)
+        private CommentReport MapReportCommentViewModel(CommentReportViewModel viewModel, string callerId)
         {
-            var callerId = GetCallerId();
-            if (string.IsNullOrEmpty(callerId))
-                return new BadRequestObjectResult(new
-                {
-                    Message = "Login to unban"
-                });
-            return Ok();
+            return new CommentReport
+            {
+                PostId = viewModel.PostId,
+                ReportedByUserId = callerId,
+                Message = viewModel.Message,
+                CreatedDate = DateTime.Now,
+            };
         }
-      
+
         private string GetCallerId()
         {
             if (_caller.Identity.IsAuthenticated)

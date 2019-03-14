@@ -1,8 +1,11 @@
-﻿using DataModelLayer.Models.Comments;
+﻿using System;
+using DataModelLayer.Models.Comments;
 using DataModelLayer.Models.Entities;
 using DataModelLayer.Models.Posts;
 using DataModelLayer.Models.Tikets;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PostReport = DataModelLayer.Models.Tikets.PostReport;
 
 namespace AuthWebApi.DataContexts
 {
@@ -14,6 +17,13 @@ namespace AuthWebApi.DataContexts
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            AddIndexes(modelBuilder);
+            
+            SetDefaultValues(modelBuilder);
+        }
+
+        private void AddIndexes(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Comment>()
                 .HasIndex(comment => comment.UserId);
@@ -27,6 +37,23 @@ namespace AuthWebApi.DataContexts
                 .HasIndex(commentLike => commentLike.CommentId);
         }
 
+        private void SetDefaultValues(ModelBuilder modelBuilder)
+        {
+            SetDefaultValuesForPostReports(modelBuilder.Entity<PostReport>());
+        }
+
+        private void SetDefaultValuesForPostReports(EntityTypeBuilder<PostReport> entityBuilder)
+        {
+            entityBuilder.Property(model => model.AddresDateTime).HasDefaultValue(DateTime.Now);
+            entityBuilder.Property(model => model.CreatedDate).HasDefaultValue(DateTime.Now);
+        }
+
+        private void SetDefaultValuesForCommentReports(EntityTypeBuilder<CommentReport> entityBuilder)
+        {
+            entityBuilder.Property(model => model.AddresDateTime).HasDefaultValue(DateTime.Now);
+            entityBuilder.Property(model => model.CreatedDate).HasDefaultValue(DateTime.Now);
+        }
+
         public DbSet<UserCommonData> UserCommonData { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<PostFiles> PostFiles { get; set; }
@@ -34,11 +61,8 @@ namespace AuthWebApi.DataContexts
         public DbSet<CommentFiles> CommentFiles { get; set; }
         public DbSet<PostLike> PostLikes { get; set; }
         public DbSet<CommentLike> CommentLikes { get; set; }
-        public DbSet<ReportEntity> ReportEntity { get; set; }
+        public DbSet<PostReport> PostReports { get; set; }
+        public DbSet<CommentReport> CommentReports { get; set; }
         public DbSet<Ticket> ReportTickets { get; set; }
-
-        //public DbSet<UserStatus> UsersStatuses { get; set; }
-        //public DbSet<AdminProposal> AdminProposals { get; set; }
-        //public DbSet<Ticket> Tikets { get; set; }
     }
 }
